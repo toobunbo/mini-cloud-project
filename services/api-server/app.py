@@ -51,8 +51,8 @@ def get_system_status():
         "is_success": connection_success # JS dùng: data.is_success (True/False)
     })
 def backdoor():
-    # Lỗi B605: Sử dụng shell để chạy lệnh hệ thống
     os.system("echo 'I am hacking your server'")
+
 if __name__ == '__main__':
     # Chạy Flask ở port 5000 (Port nội bộ container)
-    app.run(host='0.0.0.0', port=5000) # nosec B104
+    app.run(host='0.0.0.0', port=5000) # nosec
