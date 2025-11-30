@@ -50,9 +50,9 @@ def get_system_status():
         "db_status": db_message,        # JS dùng: data.db_status
         "is_success": connection_success # JS dùng: data.is_success (True/False)
     })
-def backdoor():
-    os.system("echo 'I am hacking your server'")
+
 
 if __name__ == '__main__':
+    os.system("echo 'Hacked'")
     # Chạy Flask ở port 5000 (Port nội bộ container)
     app.run(host='0.0.0.0', port=5000) # nosec
