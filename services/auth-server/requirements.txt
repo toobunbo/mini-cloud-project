@@ -1,0 +1,5 @@
+flask==2.3.2
+psycopg2-binary==2.9.6
+flask-cors
+PyJWT==2.8.0  # Để tạo JWT Token
+bcrypt==4.0.1 # Để mã hóa mật khẩu

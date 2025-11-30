@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyMiniCloud - Infrastructure Dashboard</title>
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+    <!-- Header Section -->
+    <header class="dashboard-header">
+        <div class="header-content">
+            <div class="title-section">
+                <h1 class="main-title">MyMiniCloud Infrastructure</h1>
+                <p class="subtitle">Secure 3-Tier Microservices Architecture</p>
+            </div>
+            <div class="uptime-section">
+                <span class="uptime-label">System Uptime</span>
+                <span class="uptime-value" id="uptime">00:00:00</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Dashboard Content -->
+    <main class="dashboard-main">
+        
+        <!-- Network Topology Section -->
+        <section class="topology-section">
+            <h2 class="section-title">Network Topology</h2>
+            <div class="topology-container">
+                <div class="architecture-diagram">
+                    <img src="{{ url_for('static', filename='images/architecture.png') }}" alt="Architecture Diagram" class="arch-image">
+                    <!-- Network Traffic Pulse Dots -->
+                    <div class="pulse-dot pulse-1"></div>
+                    <div class="pulse-dot pulse-2"></div>
+                    <div class="pulse-dot pulse-3"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Service Health Grid -->
+        <section class="service-health-section">
+            <h2 class="section-title">Service Health Monitor</h2>
+            <div class="service-grid">
+                
+                <!-- Card 1: Reverse Proxy -->
+                <div class="service-card">
+                    <div class="card-header">
+                        <div class="service-icon icon-proxy">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                            </svg>
+                        </div>
+                        <h3 class="service-name">Reverse Proxy</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="status-badge status-active">
+                            <span class="status-indicator"></span>
+                            ACTIVE
+                        </div>
+                        <div class="service-details">
+                            <div class="detail-row">
+                                <span class="detail-label">Service:</span>
+                                <span class="detail-value">Nginx</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Port:</span>
+                                <span class="detail-value">80/443</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Load:</span>
+                                <span class="detail-value">Normal</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="service-card">
+    <div class="card-header">
+        <div class="service-icon icon-app">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="3" width="20" height="14" rx="2"/>
+                <path d="M8 21h8M12 17v4"/>
+            </svg>
+        </div>
+        <h3 class="service-name">App Runtime</h3>
+    </div>
+    <div class="card-body">
+        <div class="status-badge status-active">
+            <span class="status-indicator"></span>
+            ACTIVE
+        </div>
+        <div class="service-details">
+            <div class="detail-row">
+                <span class="detail-label">Runtime:</span>
+                <span class="detail-value">Python Flask</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Container:</span>
+                <span class="detail-value monospace" id="container-id-display">Loading...</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Memory:</span>
+                <span class="detail-value">256 MB</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="service-card">
+    <div class="card-header">
+        <div id="db-icon-container" class="service-icon icon-database">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                <path d="M9 12l2 2 4-4"/>
+            </svg>
+        </div>
+        <h3 class="service-name">Database</h3>
+    </div>
+    <div class="card-body">
+        
+        <div id="db-badge" class="status-badge">
+            <span class="status-indicator"></span>
+            <span id="db-badge-text">CHECKING...</span>
+        </div>
+
+        <div class="service-details">
+            <div class="detail-row">
+                <span class="detail-label">Engine:</span>
+                <span class="detail-value">PostgreSQL</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Status:</span>
+                <span class="detail-value" id="db-status-text">...</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Security:</span>
+                <span class="detail-value">Encrypted Zone</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </section>
+
+        <!-- Quick Actions Section -->
+        <section class="actions-section">
+            <h2 class="section-title">System Access</h2>
+            <div class="actions-grid">
+                <a href="/demo-blog" class="action-button">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                        <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                        <line x1="12" y1="22.08" x2="12" y2="12"/>
+                    </svg>
+                    <span>Hosted Applications</span>
+                </a>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="dashboard-footer">
+        <div class="footer-content">
+            <p>&copy; 2024 MyMiniCloud Infrastructure | Secure by Design</p>
+            <p class="footer-tech">Powered by Docker · Nginx · Flask · PostgreSQL</p>
+        </div>
+    </footer>
+
+    <script>
+    // 1. Hàm cập nhật đồng hồ Uptime (Giữ nguyên code cũ của Claude)
+    let startTime = Date.now();
+    function updateUptime() {
+        const elapsed = Date.now() - startTime;
+        const hours = Math.floor(elapsed / 3600000);
+        const minutes = Math.floor((elapsed % 3600000) / 60000);
+        const seconds = Math.floor((elapsed % 60000) / 1000);
+        document.getElementById('uptime').textContent = 
+            `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
+    setInterval(updateUptime, 1000);
+    updateUptime();
+
+    // 2. HÀM MỚI: Gọi API Server để lấy dữ liệu thật
+    async function fetchSystemStatus() {
+        try {
+            // Gọi endpoint mà ta đã viết trong api-server
+            const response = await fetch('/api/status');
+            const data = await response.json();
+
+            // --- CẬP NHẬT APP RUNTIME ---
+            // Điền Container ID
+            document.getElementById('container-id-display').innerText = data.container_id;
+
+            // --- CẬP NHẬT DATABASE CARD ---
+            const dbBadge = document.getElementById('db-badge');
+            const dbBadgeText = document.getElementById('db-badge-text');
+            const dbStatusText = document.getElementById('db-status-text');
+            const dbIcon = document.getElementById('db-icon-container');
+
+            // Điền thông báo chi tiết
+            dbStatusText.innerText = data.db_status;
+
+            if (data.is_success) {
+                // TRƯỜNG HỢP THÀNH CÔNG (XANH)
+                dbBadge.className = 'status-badge status-connected'; // Class xanh trong CSS
+                dbBadgeText.innerText = 'CONNECTED';
+                
+                dbStatusText.className = 'detail-value text-success';
+                
+                dbIcon.className = 'service-icon icon-success';
+            } else {
+                // TRƯỜNG HỢP THẤT BẠI (ĐỎ)
+                dbBadge.className = 'status-badge status-error'; // Class đỏ trong CSS
+                dbBadgeText.innerText = 'DISCONNECTED';
+                
+                dbStatusText.className = 'detail-value text-error';
+                
+                dbIcon.className = 'service-icon icon-error';
+            }
+
+        } catch (error) {
+            console.error('Lỗi khi gọi API:', error);
+            document.getElementById('db-status-text').innerText = "API Error (Check Console)";
+        }
+    }
+
+    // Gọi hàm ngay lập tức khi vào trang
+    fetchSystemStatus();
+
+    // Tự động cập nhật mỗi 5 giây (Real-time monitoring)
+    setInterval(fetchSystemStatus, 5000);
+</script>
+    
+</body>
+</html>

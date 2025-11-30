@@ -1,0 +1,88 @@
+version: '3.8'
+
+networks:
+  public-net:
+    driver: bridge
+  app-net:
+    driver: bridge
+    internal: true # Bảo mật: Chặn internet chiều ra
+  data-net:
+    driver: bridge
+    internal: true # Bảo mật: Cách ly DB hoàn toàn
+
+volumes:
+  pgdata:
+
+services:
+  # 1. Reverse Proxy (Cổng chính - Container 9)
+  reverse-proxy:
+    image: nginx:alpine
+    container_name: proxy_server
+    volumes:
+      - ../services/reverse-proxy/nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "8080:80" # Mở cổng 8080 ra máy thật
+    networks:
+      - public-net
+      - app-net
+    depends_on:
+      - web-server # Chờ Web lên
+      - api-server # Chờ API lên
+
+  # 2. Web Server (Frontend HTML tĩnh - Container 1 - MỚI)
+  web-server:
+    build: 
+      context: ../services/web-server # Nơi chứa HTML/CSS
+    container_name: web_server
+    networks:
+      - app-net # Chỉ cần giao tiếp với Proxy
+    # Không cần data-net, không cần environment DB -> Rất an toàn
+
+  # 3. API Server (Backend Python - Container 2)
+  api-server:
+    build: 
+      context: ../services/api-server
+      dockerfile: Dockerfile
+    container_name: api_server
+    environment:
+      - DB_HOST=database_server
+      - DB_NAME=mydb
+      - DB_USER=user
+      - DB_PASS=secure_password_here
+    networks:
+      - app-net # Để nhận lệnh từ Proxy (qua /api)
+      - data-net # Để gọi xuống DB
+    depends_on:
+      - database
+
+  # 4. Database (Container 3)
+  database:
+    image: postgres:13-alpine
+    container_name: database_server
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: secure_password_here
+      POSTGRES_DB: mydb
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      # --- SỬA DÒNG NÀY (Thêm một dấu chấm nữa) ---
+      - ../services/database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - data-net
+  # Authentication
+  auth-server:
+    build: 
+      context: ../services/auth-server
+    container_name: auth_server
+    environment:
+      - DB_HOST=database_server
+      - DB_NAME=mydb
+      - DB_USER=user
+      - DB_PASS=secure_password_here
+      # SECRET MỚI XUẤT HIỆN
+      - JWT_SECRET_KEY=super-secret-key-kho-doan-123
+    networks:
+      - app-net  # Để Proxy gọi vào
+      - data-net # Để đọc User từ DB
+    depends_on:
+      - database
