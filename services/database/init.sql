@@ -11,6 +11,6 @@ CREATE TABLE users (
 );
 
 -- Dữ liệu mẫu (Password là "123456" đã được hash bằng bcrypt)
-INSERT INTO users (username, email, password_hash, role) VALUES 
+INSERT INTO users (username, email, password_hash, role) VALUES
 ('admin', 'admin@minicloud.local', '$2b$12$7H.x.j.k.l.m.n.o.p.q.r.s.t.u.v.w.x.y.z.A.B.C.D.E.F.G', 'admin'),
 ('student', 'student@minicloud.local', '$2b$12$7H.x.j.k.l.m.n.o.p.q.r.s.t.u.v.w.x.y.z.A.B.C.D.E.F.G', 'user');

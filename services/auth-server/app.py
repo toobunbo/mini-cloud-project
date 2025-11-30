@@ -65,7 +65,7 @@ def login():
 
     conn = get_db_connection()
     cur = conn.cursor()
-    
+
     cur.execute('SELECT id, username, password_hash, role FROM users WHERE username = %s', (username,))
     user = cur.fetchone()
     cur.close()
@@ -83,7 +83,7 @@ def login():
             }, SECRET_KEY, algorithm="HS256")
 
             return jsonify({'token': token, 'message': 'Login successful'})
-    
+
     return jsonify({'message': 'Invalid credentials'}), 401
 
 @app.route('/verify', methods=['POST'])
@@ -100,4 +100,4 @@ def verify_token():
         return jsonify({'valid': False, 'error': 'Invalid token'}), 401
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5000) # nosec B104

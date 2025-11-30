@@ -23,7 +23,7 @@
 
     <!-- Main Dashboard Content -->
     <main class="dashboard-main">
-        
+
         <!-- Network Topology Section -->
         <section class="topology-section">
             <h2 class="section-title">Network Topology</h2>
@@ -42,7 +42,7 @@
         <section class="service-health-section">
             <h2 class="section-title">Service Health Monitor</h2>
             <div class="service-grid">
-                
+
                 <!-- Card 1: Reverse Proxy -->
                 <div class="service-card">
                     <div class="card-header">
@@ -118,7 +118,7 @@
         <h3 class="service-name">Database</h3>
     </div>
     <div class="card-body">
-        
+
         <div id="db-badge" class="status-badge">
             <span class="status-indicator"></span>
             <span id="db-badge-text">CHECKING...</span>
@@ -177,7 +177,7 @@
         const hours = Math.floor(elapsed / 3600000);
         const minutes = Math.floor((elapsed % 3600000) / 60000);
         const seconds = Math.floor((elapsed % 60000) / 1000);
-        document.getElementById('uptime').textContent = 
+        document.getElementById('uptime').textContent =
             `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     }
     setInterval(updateUptime, 1000);
@@ -207,17 +207,17 @@
                 // TRƯỜNG HỢP THÀNH CÔNG (XANH)
                 dbBadge.className = 'status-badge status-connected'; // Class xanh trong CSS
                 dbBadgeText.innerText = 'CONNECTED';
-                
+
                 dbStatusText.className = 'detail-value text-success';
-                
+
                 dbIcon.className = 'service-icon icon-success';
             } else {
                 // TRƯỜNG HỢP THẤT BẠI (ĐỎ)
                 dbBadge.className = 'status-badge status-error'; // Class đỏ trong CSS
                 dbBadgeText.innerText = 'DISCONNECTED';
-                
+
                 dbStatusText.className = 'detail-value text-error';
-                
+
                 dbIcon.className = 'service-icon icon-error';
             }
 
@@ -233,6 +233,6 @@
     // Tự động cập nhật mỗi 5 giây (Real-time monitoring)
     setInterval(fetchSystemStatus, 5000);
 </script>
-    
+
 </body>
 </html>

@@ -31,7 +31,7 @@ services:
 
   # 2. Web Server (Frontend HTML tĩnh - Container 1 - MỚI)
   web-server:
-    build: 
+    build:
       context: ../services/web-server # Nơi chứa HTML/CSS
     container_name: web_server
     networks:
@@ -40,7 +40,7 @@ services:
 
   # 3. API Server (Backend Python - Container 2)
   api-server:
-    build: 
+    build:
       context: ../services/api-server
       dockerfile: Dockerfile
     container_name: api_server
@@ -71,7 +71,7 @@ services:
       - data-net
   # Authentication
   auth-server:
-    build: 
+    build:
       context: ../services/auth-server
     container_name: auth_server
     environment:

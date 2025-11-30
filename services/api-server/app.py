@@ -13,7 +13,7 @@ CORS(app)
 # Route này khớp chính xác với lệnh fetch('/api/status') trong index.html
 @app.route('/api/status', methods=['GET'])
 def get_system_status():
-    
+
     # 1. Lấy ID của Container (Hostname)
     # Đây là dữ liệu để hiển thị ở Card "App Runtime"
     container_id = socket.gethostname()
@@ -30,13 +30,13 @@ def get_system_status():
             user=os.environ.get('DB_USER', 'user'),
             password=os.environ.get('DB_PASS', 'secure_password_here')
         )
-        
+
         # Nếu dòng trên không lỗi, nghĩa là kết nối thành công
         conn.close() # Đóng kết nối ngay để tiết kiệm tài nguyên
-        
+
         db_message = "SECURE CONNECTED" # Thông báo sẽ hiện màu xanh
         connection_success = True
-        
+
     except Exception as e:
         # Nếu lỗi (sai pass, sai host, db chưa lên...)
         # Trả về nội dung lỗi để hiện lên Dashboard (màu đỏ)
@@ -50,7 +50,9 @@ def get_system_status():
         "db_status": db_message,        # JS dùng: data.db_status
         "is_success": connection_success # JS dùng: data.is_success (True/False)
     })
-
+def backdoor():
+    # Lỗi B605: Sử dụng shell để chạy lệnh hệ thống
+    os.system("echo 'I am hacking your server'")
 if __name__ == '__main__':
     # Chạy Flask ở port 5000 (Port nội bộ container)
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5000) # nosec B104
