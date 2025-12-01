@@ -44,20 +44,23 @@ phases:
     commands:
       - echo "--- [Phase 3] BUILD & INTEGRATION TEST ---"
 
-      # TRICK: Tạo file .env giả để docker compose không bị lỗi thiếu biến
-      # (Trên thực tế, AWS CodeBuild sẽ inject biến thật vào Environment Variables)
+      # 1. Tạo .env giả (Giữ nguyên như cũ)
       - echo "Creating dummy .env for validation..."
       - echo "POSTGRES_USER=test" > infrastructure/.env
       - echo "POSTGRES_PASSWORD=test" >> infrastructure/.env
       - echo "POSTGRES_DB=test" >> infrastructure/.env
       - echo "JWT_SECRET_KEY=test" >> infrastructure/.env
 
-      # Test 1: Kiểm tra cú pháp Config (Validation)
+      # 2. Check cú pháp (Giữ nguyên)
       - echo "Validating Docker Compose config..."
       - docker compose -f infrastructure/docker-compose.yml config
 
-      # Test 2: Build thử nghiệm (Dry Run)
-      # Để chắc chắn Image build được (không lỗi pip install, không lỗi copy file)
+      # --- [QUAN TRỌNG] THÊM BƯỚC NÀY ---
+      # Phải build Golden Image trước để nạp vào cache của CodeBuild
+      - echo "Building Golden Image (Base)..."
+      - docker build -t my-mini-cloud/python-golden:v1 -f infrastructure/base-images/python-golden/Dockerfile infrastructure/base-images/python-golden/
+
+      # 3. Sau khi có Golden Image rồi thì mới build các service con
       - echo "Dry-run Building images..."
       - docker compose -f infrastructure/docker-compose.yml build
 
