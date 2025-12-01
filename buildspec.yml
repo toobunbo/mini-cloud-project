@@ -1,0 +1,65 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.10
+    commands:
+      - echo "--- [Phase 1] INSTALLING SECURITY TOOLS ---"
+      # 1. Cài đặt Bandit (Quét lỗ hổng Python)
+      - pip install bandit
+
+      # 2. Cài đặt git-secrets (Sửa lỗi: Phải clone và cài thủ công)
+      - echo "Installing git-secrets..."
+      - git clone https://github.com/awslabs/git-secrets.git
+      - cd git-secrets && make install && cd ..
+      - git secrets --register-aws --global
+
+      # 3. Cài đặt Hadolint (Quét Dockerfile)
+      - echo "Installing Hadolint..."
+      - wget -O /bin/hadolint https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64
+      - chmod +x /bin/hadolint
+
+  pre_build:
+    commands:
+      - echo "--- [Phase 2] SECURITY GATES (Shift-Left) ---"
+
+      # GATE 1: Secret Scanning
+      # (Lưu ý: git secrets quét lịch sử git, trên CI cần cẩn thận nếu fetch-depth nông)
+      - echo "Scanning for leaked secrets..."
+      - git secrets --scan -r .
+
+      # GATE 2: SAST Scanning (Bandit)
+      - echo "Scanning Python code..."
+      # Quét folder services, bỏ qua lỗi B104 (0.0.0.0 binding) và thư mục ảo
+      - bandit -r services/ -ll -s B104 -x tests/,venv/
+
+      # GATE 3: Container Scanning (Hadolint)
+      - echo "Scanning Dockerfiles..."
+      - find services -name "Dockerfile" -print0 | xargs -0 -I {} hadolint --ignore DL3008 {}
+
+  build:
+    commands:
+      - echo "--- [Phase 3] BUILD & INTEGRATION TEST ---"
+
+      # TRICK: Tạo file .env giả để docker compose không bị lỗi thiếu biến
+      # (Trên thực tế, AWS CodeBuild sẽ inject biến thật vào Environment Variables)
+      - echo "Creating dummy .env for validation..."
+      - echo "POSTGRES_USER=test" > infrastructure/.env
+      - echo "POSTGRES_PASSWORD=test" >> infrastructure/.env
+      - echo "POSTGRES_DB=test" >> infrastructure/.env
+      - echo "JWT_SECRET_KEY=test" >> infrastructure/.env
+
+      # Test 1: Kiểm tra cú pháp Config (Validation)
+      - echo "Validating Docker Compose config..."
+      - docker compose -f infrastructure/docker-compose.yml config
+
+      # Test 2: Build thử nghiệm (Dry Run)
+      # Để chắc chắn Image build được (không lỗi pip install, không lỗi copy file)
+      - echo "Dry-run Building images..."
+      - docker compose -f infrastructure/docker-compose.yml build
+
+  post_build:
+    commands:
+      - echo "--- [Phase 4] COMPLETED ---"
+      - echo "Security Checks Passed. Ready for Deployment."
