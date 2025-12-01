@@ -6,26 +6,28 @@ phases:
       python: 3.10
     commands:
       - echo "--- [Phase 1] INSTALLING SECURITY TOOLS ---"
-      # 1. Cài đặt Bandit (Quét lỗ hổng Python)
       - pip install bandit
 
-      # 2. Cài đặt git-secrets (Sửa lỗi: Phải clone và cài thủ công)
+      # FIX LỖI GIT-SECRETS: Clone vào /tmp để không bị quét nhầm
       - echo "Installing git-secrets..."
+      - cd /tmp
       - git clone https://github.com/awslabs/git-secrets.git
-      - cd git-secrets && make install && cd ..
+      - cd git-secrets && make install
+      - cd $CODEBUILD_SRC_DIR  # Quay lại thư mục dự án gốc
+
+      # Đăng ký pattern (quan trọng)
       - git secrets --register-aws --global
 
-      # 3. Cài đặt Hadolint (Quét Dockerfile)
-      - echo "Installing Hadolint..."
+      # Cài Hadolint
       - wget -O /bin/hadolint https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64
       - chmod +x /bin/hadolint
 
   pre_build:
     commands:
-      - echo "--- [Phase 2] SECURITY GATES (Shift-Left) ---"
+      - echo "--- [Phase 2] SECURITY GATES ---"
 
       # GATE 1: Secret Scanning
-      # (Lưu ý: git secrets quét lịch sử git, trên CI cần cẩn thận nếu fetch-depth nông)
+      # Chỉ quét thư mục hiện tại (.), bỏ qua folder ẩn .git
       - echo "Scanning for leaked secrets..."
       - git secrets --scan -r .
 
