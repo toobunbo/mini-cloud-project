@@ -1,75 +1,122 @@
 version: '3.8'
 
+# --- 1. MẠNG LƯỚI (Network Segmentation) ---
 networks:
-  public-net:
+  public-net:      # Vùng DMZ (Internet)
     driver: bridge
-  app-net:
+  app-net:         # Vùng Ứng dụng (Private)
     driver: bridge
-    internal: true # Bảo mật: Chặn internet chiều ra
-  data-net:
+    internal: true # Chặn kết nối ra Internet
+  data-net:        # Vùng Dữ liệu (Secure)
     driver: bridge
-    internal: true # Bảo mật: Cách ly DB hoàn toàn
+    internal: true # Cô lập hoàn toàn
 
+# --- 2. Ổ CỨNG (Volumes) ---'
 volumes:
-  pgdata:
+  pgdata:          # Lưu dữ liệu PostgreSQL
+  minio_data:      # Lưu dữ liệu MinIO (ĐÃ THÊM MỚI)
+  prom_data:      # Lưu dữ liệu metrics
+  grafana_data:
 
 services:
-  # 1. Reverse Proxy (Cổng chính - Container 9)
+  # --- GROUP 1: GATEWAY ---
   reverse-proxy:
-    image: nginx:alpine
+    image: nginxinc/nginx-unprivileged:alpine
     container_name: proxy_server
     volumes:
       - ../services/reverse-proxy/nginx.conf:/etc/nginx/nginx.conf:ro
     ports:
-      - "8080:80" # Mở cổng 8080 ra máy thật
+      - "4444:8080"
     networks:
       - public-net
       - app-net
     depends_on:
-      - web-server # Chờ Web lên
-      - api-server # Chờ API lên
-
-  # 2. Web Server (Frontend HTML tĩnh - Container 1 - MỚI)
+      - web-server
+      - api-server-1
+      - api-server-2
+      - api-server-3
+  # --- GROUP 2: FRONTEND ---
   web-server:
     build:
-      context: ../services/web-server # Nơi chứa HTML/CSS
+      context: ../services/web-server
     container_name: web_server
     networks:
-      - app-net # Chỉ cần giao tiếp với Proxy
-    # Không cần data-net, không cần environment DB -> Rất an toàn
+      - app-net
 
-  # 3. API Server (Backend Python - Container 2)
-  api-server:
+  # --- GROUP 3: BACKEND LOGIC ---
+  api-server-1:
     build:
       context: ../services/api-server
       dockerfile: Dockerfile
-    container_name: api_server
+    container_name: api_server_1
     environment:
+      # Config Database
       - DB_HOST=database_server
       - DB_NAME=mydb
       - DB_USER=user
       - DB_PASS=secure_password_here
+      # Config MinIO (ĐÃ BỔ SUNG ĐỂ PYTHON KẾT NỐI ĐƯỢC)
+      - MINIO_ENDPOINT=storage-server:9000
+      # Lấy giá trị từ file .env truyền vào code Python
+      - MINIO_ACCESS_KEY=${MINIO_ROOT_USER}
+      - MINIO_SECRET_KEY=${MINIO_ROOT_PASSWORD}
+      - JWT_SECRET_KEY=super-secret-key-kho-doan-123
     networks:
-      - app-net # Để nhận lệnh từ Proxy (qua /api)
-      - data-net # Để gọi xuống DB
+      - app-net
+      - data-net
     depends_on:
       - database
+      - storage-server # Chờ MinIO lên trước
 
-  # 4. Database (Container 3)
-  database:
-    image: postgres:13-alpine
-    container_name: database_server
+  api-server-2:
+    build:
+      context: ../services/api-server
+      dockerfile: Dockerfile
+    container_name: api_server_2
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: secure_password_here
-      POSTGRES_DB: mydb
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-      # --- SỬA DÒNG NÀY (Thêm một dấu chấm nữa) ---
-      - ../services/database/init.sql:/docker-entrypoint-initdb.d/init.sql
+      # Config Database
+      - DB_HOST=database_server
+      - DB_NAME=mydb
+      - DB_USER=user
+      - DB_PASS=secure_password_here
+      # Config MinIO (ĐÃ BỔ SUNG ĐỂ PYTHON KẾT NỐI ĐƯỢC)
+      - MINIO_ENDPOINT=storage-server:9000
+      # Lấy giá trị từ file .env truyền vào code Python
+      - MINIO_ACCESS_KEY=${MINIO_ROOT_USER}
+      - MINIO_SECRET_KEY=${MINIO_ROOT_PASSWORD}
+      - JWT_SECRET_KEY=super-secret-key-kho-doan-123
     networks:
+      - app-net
       - data-net
-  # Authentication
+    depends_on:
+      - database
+      - storage-server # Chờ MinIO lên trước
+
+  api-server-3:
+    build:
+      context: ../services/api-server
+      dockerfile: Dockerfile
+    container_name: api_server_3
+    environment:
+      # Config Database
+      - DB_HOST=database_server
+      - DB_NAME=mydb
+      - DB_USER=user
+      - DB_PASS=secure_password_here
+      # Config MinIO (ĐÃ BỔ SUNG ĐỂ PYTHON KẾT NỐI ĐƯỢC)
+      - MINIO_ENDPOINT=storage-server:9000
+      # Lấy giá trị từ file .env truyền vào code Python
+      - MINIO_ACCESS_KEY=${MINIO_ROOT_USER}
+      - MINIO_SECRET_KEY=${MINIO_ROOT_PASSWORD}
+      - JWT_SECRET_KEY=super-secret-key-kho-doan-123
+    networks:
+      - app-net
+      - data-net
+    depends_on:
+      - database
+      - storage-server # Chờ MinIO lên trước
+
+
   auth-server:
     build:
       context: ../services/auth-server
@@ -79,10 +126,100 @@ services:
       - DB_NAME=mydb
       - DB_USER=user
       - DB_PASS=secure_password_here
-      # SECRET MỚI XUẤT HIỆN
       - JWT_SECRET_KEY=super-secret-key-kho-doan-123
     networks:
-      - app-net  # Để Proxy gọi vào
-      - data-net # Để đọc User từ DB
+      - app-net
+      - data-net
     depends_on:
       - database
+
+  # --- GROUP 4: DATA STORAGE ---
+  database:
+    image: postgres:13-alpine
+    container_name: database_server
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: secure_password_here
+      POSTGRES_DB: mydb
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ../services/database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - data-net
+
+  storage-server:
+    image: minio/minio
+    container_name: storage_server
+    command: server /data --console-address ":9001"
+    # Load user/pass từ file .env
+    env_file:
+      - .env
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    volumes:
+      - minio_data:/data
+    ports:
+      - "19001:9001" # Chỉ mở cổng Console quản trị ra ngoài (qua public-net)
+    networks:
+      - app-net     # Để API Server gọi vào (cổng 9000)
+      - public-net  # Để Admin truy cập Console (cổng 9001)
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: cadvisor
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    networks:
+      - app-net
+    # cAdvisor không cần mở port ra ngoài, chỉ cần Prometheus thấy nó là được
+
+  # 7. MONITORING SERVER (Prometheus)
+  monitoring:
+    image: prom/prometheus
+    container_name: monitoring_server
+    volumes:
+      # SỬA ĐƯỜNG DẪN NÀY CHO ĐÚNG CẤU TRÚC THƯ MỤC CỦA BẠN
+      # Nếu file docker-compose.yml nằm ở /infrastructure/
+      # Và file prometheus.yml nằm ở /services/monitoring/
+      # Thì đường dẫn phải là ../services/monitoring/prometheus.yml
+      - ../services/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prom_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    networks:
+      - app-net
+
+  # 8. LOGGING/DASHBOARD SERVER (Grafana)
+  grafana:
+    image: grafana/grafana
+    container_name: logging_server
+    ports:
+      - "3000:3000" # Truy cập Dashboard qua port 3000
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin # Mật khẩu đăng nhập Grafana
+    volumes:
+      - grafana_data:/var/lib/grafana # Lưu cấu hình Dashboard
+    networks:
+      - app-net     # Để kết nối tới Monitoring
+      - public-net  # (Tùy chọn) Nếu muốn Nginx proxy vào
+    depends_on:
+      - monitoring
+  # 6. DNS SERVER (CoreDNS)
+  dns-server:
+    image: coredns/coredns
+    container_name: dns_server
+    volumes:
+      - ../services/dns-server/Corefile:/dns-server/Corefile
+    command: -conf /dns-server/Corefile
+    ports:
+      - "5354:53/udp"
+      - "5354:53/tcp" # Test từ ngoài: dig @localhost -p 10053 db.cloud.local
+    networks:
+      - app-net   # Phục vụ các App
+      - data-net  # (Tùy chọn) Nếu muốn Database cũng phân giải được tên
