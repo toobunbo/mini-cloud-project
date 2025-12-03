@@ -23,15 +23,17 @@ jobs:
       with:
         python-version: '3.10'
 
-    # 3. Cài đặt Công cụ Bảo mật (Bandit, Git-secrets, Hadolint)
     - name: Install Security Tools
       run: |
         echo "Installing Bandit..."
         pip install bandit
 
         echo "Installing git-secrets..."
-        git clone https://github.com/awslabs/git-secrets.git
-        cd git-secrets && sudo make install && cd ..
+        # Clone vào thư mục tạm /tmp để không làm bẩn thư mục code chính
+        git clone https://github.com/awslabs/git-secrets.git /tmp/git-secrets
+        cd /tmp/git-secrets && sudo make install
+
+        # Đăng ký rule
         git secrets --register-aws --global
 
         echo "Installing Hadolint..."
@@ -39,11 +41,11 @@ jobs:
         chmod +x hadolint
         sudo mv hadolint /usr/local/bin/
 
-    # 4. GATE 1: Quét lộ mật khẩu/Key (Secret Scanning)
+    # 4. GATE 1: Quét lộ mật khẩu/Key (Sửa lại lệnh scan)
     - name: Security Gate - Secret Scanning
       run: |
         echo "Running git-secrets..."
-        # Quét toàn bộ file trong thư mục hiện tại
+        # Scan tất cả file trong thư mục hiện tại (trừ .git)
         git secrets --scan -r .
 
     # 5. GATE 2: Quét mã độc Python (SAST)
