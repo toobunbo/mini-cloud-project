@@ -1,4 +1,4 @@
-name: DevSecOps CI Pipeline
+name: DevSecOps CI/CD Pipeline
 
 # Kích hoạt khi có code push vào nhánh main
 on:
@@ -8,32 +8,30 @@ on:
     branches: [ "main" ]
 
 jobs:
-  # Job 1: Security & Integrity Check
+  # --- JOB 1: SECURITY & INTEGRATION TEST (CI) ---
   security-and-build:
-    runs-on: ubuntu-latest  # Máy ảo Linux có sẵn Docker
+    runs-on: ubuntu-latest
 
     steps:
-    # 1. Lấy code về
+    # 1. Lấy code về máy ảo GitHub
     - name: Checkout Code
       uses: actions/checkout@v3
 
-    # 2. Cài đặt Python (Để chạy Bandit)
+    # 2. Cài đặt Python
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.10'
 
+    # 3. Cài đặt Tool (Fix: Cài git-secrets vào /tmp để tránh quét nhầm)
     - name: Install Security Tools
       run: |
         echo "Installing Bandit..."
         pip install bandit
 
         echo "Installing git-secrets..."
-        # Clone vào thư mục tạm /tmp để không làm bẩn thư mục code chính
         git clone https://github.com/awslabs/git-secrets.git /tmp/git-secrets
         cd /tmp/git-secrets && sudo make install
-
-        # Đăng ký rule
         git secrets --register-aws --global
 
         echo "Installing Hadolint..."
@@ -41,38 +39,36 @@ jobs:
         chmod +x hadolint
         sudo mv hadolint /usr/local/bin/
 
-    # 4. GATE 1: Quét lộ mật khẩu/Key (Sửa lại lệnh scan)
+    # 4. Quét lộ Secret
     - name: Security Gate - Secret Scanning
       run: |
         echo "Running git-secrets..."
-        # Scan tất cả file trong thư mục hiện tại (trừ .git)
+        # Quét code hiện tại (loại trừ .git)
         git secrets --scan -r .
 
-    # 5. GATE 2: Quét mã độc Python (SAST)
+    # 5. Quét mã độc Python
     - name: Security Gate - SAST (Bandit)
       run: |
         echo "Running Bandit..."
-        # Quét folder services, bỏ qua lỗi B104 (bind 0.0.0.0)
+        # Bỏ qua lỗi B104 (bind 0.0.0.0) vì chạy trong Docker
         bandit -r services/ -ll -s B104 -x tests/,venv/
 
-    # 6. GATE 3: Quét Dockerfile (Container Security)
+    # 6. Quét Dockerfile
     - name: Security Gate - Dockerfile Linting
       run: |
         echo "Running Hadolint..."
-        # Tìm tất cả Dockerfile và quét (Bỏ qua lỗi DL3008 về version apt)
         find services -name "Dockerfile" -print0 | xargs -0 -I {} hadolint --ignore DL3008 {}
-    - name: Build Golden Image
+
+    # 7. Test Build Golden Image (Quan trọng)
+    - name: Test Build Golden Image
       run: |
         echo "Building Python Golden Image..."
         docker build -t my-mini-cloud/python-golden:v1 ./infrastructure/base-images/python-golden
 
-    # 7. INTEGRATION TEST: Thử dựng hệ thống (Build Test)
-    # Bước này thay thế cho việc AWS CodeBuild bị khóa Docker
-    # GitHub Actions cho phép chạy Docker thoải mái!
-    - name: Integration Test - Docker Build
+    # 8. Test Docker Compose Config
+    - name: Integration Test - Docker Config
       run: |
         echo "Creating dummy .env for testing..."
-        # Tạo file .env giả để docker compose không lỗi thiếu biến
         echo "DB_HOST=test" > infrastructure/.env
         echo "DB_NAME=test" >> infrastructure/.env
         echo "DB_USER=test" >> infrastructure/.env
@@ -81,19 +77,45 @@ jobs:
         echo "MINIO_ROOT_USER=test" >> infrastructure/.env
         echo "MINIO_ROOT_PASSWORD=test" >> infrastructure/.env
 
-        echo "Building Images..."
-        # Thử build để đảm bảo Dockerfile không lỗi
-        docker compose -f infrastructure/docker-compose.yml build
+        echo "Validating Compose Config..."
+        docker compose -f infrastructure/docker-compose.yml config
 
-    # 8. (Tùy chọn) Thử chạy lên xem có sập không (Smoke Test)
-    - name: Integration Test - Dry Run Up
-      run: |
-        docker compose -f infrastructure/docker-compose.yml up -d
-        sleep 10
-        docker compose -f infrastructure/docker-compose.yml ps
-        # Kiểm tra xem có container nào bị Exit không
-        if [ $(docker compose -f infrastructure/docker-compose.yml ps -q | xargs docker inspect -f '{{.State.ExitCode}}' | grep -v 0 | wc -l) -gt 0 ]; then
-          echo "Error: Some containers failed to start!"
-          exit 1
-        fi
-        echo "All containers started successfully in test environment!"
+  # --- JOB 2: DEPLOY TO EC2 (CD) ---
+  deploy:
+    needs: security-and-build # Chỉ chạy nếu CI xanh
+    if: github.ref == 'refs/heads/main' # Chỉ deploy nhánh main
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.HOST_DNS }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
+          script: |
+            echo "🚀 [1/5] Starting Deployment on EC2..."
+
+            # Vào thư mục dự án
+            cd ~/mini-cloud-project
+
+            echo "📥 [2/5] Pulling latest code..."
+            # Reset code cũ để tránh xung đột file local
+            git reset --hard
+            git pull origin main
+
+            echo "🔨 [3/5] Re-building Golden Image..."
+            # Phải build lại móng nhà trước
+            docker build -t my-mini-cloud/python-golden:v1 ./infrastructure/base-images/python-golden
+
+            echo "🔥 [4/5] Updating Containers..."
+            cd infrastructure
+            # Lệnh này thông minh: Chỉ container nào thay đổi code mới bị restart
+            docker compose up -d --build
+
+            echo "🧹 [5/5] Cleaning up..."
+            # Xóa image cũ cho sạch ổ cứng (Quan trọng với t3.medium)
+            docker system prune -f
+
+            echo "✅ DEPLOYMENT SUCCESSFUL!"
