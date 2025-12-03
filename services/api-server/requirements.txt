@@ -1,3 +1,5 @@
 flask==2.3.2
+flask-cors==3.0.10
 psycopg2-binary==2.9.6
-flask-cors
+boto3==1.26.133
+PyJWT==2.8.0

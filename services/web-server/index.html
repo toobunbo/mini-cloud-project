@@ -1,238 +1,500 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MyMiniCloud - Infrastructure Dashboard</title>
-    <link rel="stylesheet" href="css/dashboard.css">
+    <title>Blog - Travel with me</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; background: #f5f7fa; }
+
+        /* Reset ảnh */
+        img { display: block; max-width: 100%; }
+
+        /* Style chung cho ảnh trong khung */
+        .post-image img, .featured-image img, .about-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* Tinh chỉnh khoảng cách icon */
+        i { margin-right: 8px; }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 1.2rem 0;
+            position: sticky;
+            z-index: 1000;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        }
+
+        nav { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 2rem; }
+        .logo { color: white; font-size: 1.5rem; font-weight: bold; text-decoration: none; display: flex; align-items: center; }
+
+        .nav-menu { display: flex; gap: 2.5rem; list-style: none; }
+        .nav-menu a { color: white; text-decoration: none; transition: all 0.3s; font-weight: 500; font-size: 1.05rem; position: relative; }
+        .nav-menu a::after { content: ''; position: absolute; bottom: -5px; left: 0; width: 0; height: 2px; background: white; transition: width 0.3s; }
+        .nav-menu a:hover::after { width: 100%; }
+        .nav-menu a.active::after { width: 100%; }
+
+        /* Auth buttons & User welcome */
+        .auth-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        #userWelcome {
+            color: white;
+            font-weight: 500;
+            display: none;
+        }
+
+        .auth-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 0.6rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .auth-btn:hover {
+            background: white;
+            color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        /* Page Header */
+        .page-header {
+            background: #333;
+            padding: 4rem 0 3rem;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 1;
+        }
+
+        .page-header img {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            object-fit: cover;
+            opacity: 1;
+            z-index: 0;
+        }
+
+        .page-header h1, .page-header p { position: relative; z-index: 2; }
+        .page-header h1 { font-size: 3rem; margin-bottom: 0.5rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
+        .page-header p { font-size: 1.2rem; opacity: 0.95; text-shadow: 1px 1px 3px rgba(0,0,0,0.5); }
+
+        /* Container & Layout */
+        .container { max-width: 1200px; margin: 0 auto; padding: 3rem 2rem; }
+        .blog-layout { display: grid; grid-template-columns: 1fr 320px; gap: 3rem; }
+        .blog-list { display: flex; flex-direction: column; gap: 2rem; }
+
+        /* Post Card */
+        .post-card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 20px rgba(0,0,0,0.08); transition: all 0.3s; display: flex; flex-direction: row; }
+        .post-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
+
+        .post-image { width: 300px; height: 250px; background: #eee; flex-shrink: 0; position: relative; overflow: hidden; }
+        .post-image::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%); transform: translateX(-100%); transition: transform 0.6s; z-index: 1; }
+        .post-card:hover .post-image::before { transform: translateX(100%); }
+
+        .post-content { padding: 2rem; flex: 1; display: flex; flex-direction: column; }
+        .post-meta { display: flex; gap: 1.5rem; margin-bottom: 1rem; color: #999; font-size: 0.9rem; }
+        .post-meta span { display: flex; align-items: center; }
+
+        .post-content h2, .post-content h3 { color: #667eea; margin-bottom: 1rem; font-size: 1.6rem; font-weight: 600; line-height: 1.4; }
+        .post-content h3 a { text-decoration: none; color: inherit; }
+        .post-content p { color: #666; margin-bottom: 1.5rem; line-height: 1.8; flex-grow: 1; }
+
+        .read-more { display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 0.7rem 1.8rem; border-radius: 30px; text-decoration: none; transition: all 0.3s; font-weight: 500; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3); align-self: flex-start; }
+        .read-more:hover { transform: scale(1.05); box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4); }
+
+        /* Sidebar */
+        .sidebar { display: flex; flex-direction: column; gap: 2rem; }
+        .sidebar-widget { background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); }
+        .sidebar-widget h3 { color: #667eea; margin-bottom: 1.5rem; font-size: 1.3rem; font-weight: 600; padding-bottom: 0.8rem; border-bottom: 2px solid #f0f0f0; display: flex; align-items: center; }
+
+        .search-box { width: 100%; padding: 0.8rem 1.2rem; border: 2px solid #e0e0e0; border-radius: 30px; outline: none; font-size: 0.95rem; transition: all 0.3s; }
+        .search-box:focus { border-color: #667eea; box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); }
+
+        .category-list { list-style: none; }
+        .category-list li { padding: 0.8rem 0; border-bottom: 1px solid #f0f0f0; transition: all 0.3s; }
+        .category-list li:last-child { border-bottom: none; }
+        .category-list a { color: #666; text-decoration: none; display: flex; justify-content: space-between; align-items: center; transition: all 0.3s; }
+        .category-list a:hover { color: #667eea; padding-left: 0.5rem; }
+        .category-count { background: #f0f0f0; color: #999; padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.85rem; }
+
+        .recent-posts { list-style: none; }
+        .recent-post-item { padding: 1rem 0; border-bottom: 1px solid #f0f0f0; }
+        .recent-post-item:last-child { border-bottom: none; }
+        .recent-post-item a { color: #333; text-decoration: none; font-weight: 500; transition: color 0.3s; display: block; line-height: 1.5; }
+        .recent-post-item a:hover { color: #667eea; }
+        .recent-post-date { color: #999; font-size: 0.85rem; margin-top: 0.3rem; display: flex; align-items: center; }
+        .recent-post-date i { font-size: 0.8rem; margin-right: 5px; }
+
+        /* Footer */
+        footer { background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%); color: white; padding: 3.5rem 0 2rem; text-align: center; margin-top: 4rem; }
+        .footer-content h3 { font-size: 1.8rem; margin-bottom: 1rem; color: #667eea; display: flex; justify-content: center; align-items: center; }
+        .footer-email { color: #cbd5e0; font-size: 1.1rem; margin-bottom: 1.5rem; display: flex; justify-content: center; align-items: center; }
+        .social-links { display: flex; justify-content: center; gap: 2rem; margin: 1.5rem 0; }
+        .social-links a { color: white; text-decoration: none; font-size: 1.5rem; transition: all 0.3s; }
+        .social-links a:hover { color: #667eea; transform: translateY(-3px); }
+        .copyright { margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); color: #a0aec0; font-size: 0.95rem; }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            max-width: 450px;
+            width: 90%;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .close {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            font-size: 2rem;
+            color: #999;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close:hover {
+            color: #e74c3c;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.9rem 1.2rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Post Form Section */
+        .post-form-section {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 4rem 0;
+        }
+
+        .post-form-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: #999;
+            font-size: 1.1rem;
+        }
+
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-left: 10px;
+            border: 3px solid #667eea;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 968px) {
+            .blog-layout { grid-template-columns: 1fr; }
+            .post-card { flex-direction: column; }
+            .post-image { width: 100%; height: 200px; }
+            .sidebar { order: -1; }
+        }
+        @media (max-width: 768px) {
+            .page-header h1 { font-size: 2.2rem; }
+            .nav-menu { gap: 1.5rem; font-size: 0.9rem; }
+            .logo { font-size: 1.4rem; }
+            .auth-controls { flex-direction: column; gap: 0.5rem; margin-left: 0; margin-top: 1rem; }
+            nav { flex-wrap: wrap; }
+            .modal-content { padding: 2rem; }
+            .post-form-container { padding: 2rem; }
+        }
+        @media (max-width: 480px) {
+            nav { flex-direction: column; gap: 1rem; }
+            .container { padding: 2rem 1rem; }
+        }
+    </style>
 </head>
 <body>
-    <!-- Header Section -->
-    <header class="dashboard-header">
-        <div class="header-content">
-            <div class="title-section">
-                <h1 class="main-title">MyMiniCloud Infrastructure</h1>
-                <p class="subtitle">Secure 3-Tier Microservices Architecture</p>
+    <!-- Header -->
+    <header>
+        <nav>
+            <a href="/home.html" class="logo"><i class="fas fa-paper-plane"></i> Travel with Huyen</a>
+            <ul class="nav-menu">
+                <li><a href="/home.html">Home</a></li>
+                <li><a href="/" class="active">Blog</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+            <!-- Auth Controls -->
+            <div class="auth-controls">
+                <span id="userWelcome"></span>
+                <button id="loginBtn" class="auth-btn">
+                    <i class="fas fa-sign-in-alt"></i> Đăng nhập
+                </button>
+                <button id="logoutBtn" class="auth-btn" style="display: none;">
+                    <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                </button>
             </div>
-            <div class="uptime-section">
-                <span class="uptime-label">System Uptime</span>
-                <span class="uptime-value" id="uptime">00:00:00</span>
-            </div>
-        </div>
+        </nav>
     </header>
 
-    <!-- Main Dashboard Content -->
-    <main class="dashboard-main">
+    <!-- Page Header -->
+    <section class="page-header">
+        <img src="/images/banner-blog.jpg" alt="banner" style="width:100%; height:100%; object-fit:cover;">
+        <h1><i class="fas fa-blog"></i> Tất cả bài viết</h1>
+        <p>Khám phá những câu chuyện và kinh nghiệm du lịch của mình</p>
+    </section>
 
-        <!-- Network Topology Section -->
-        <section class="topology-section">
-            <h2 class="section-title">Network Topology</h2>
-            <div class="topology-container">
-                <div class="architecture-diagram">
-                    <img src="{{ url_for('static', filename='images/architecture.png') }}" alt="Architecture Diagram" class="arch-image">
-                    <!-- Network Traffic Pulse Dots -->
-                    <div class="pulse-dot pulse-1"></div>
-                    <div class="pulse-dot pulse-2"></div>
-                    <div class="pulse-dot pulse-3"></div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Service Health Grid -->
-        <section class="service-health-section">
-            <h2 class="section-title">Service Health Monitor</h2>
-            <div class="service-grid">
-
-                <!-- Card 1: Reverse Proxy -->
-                <div class="service-card">
-                    <div class="card-header">
-                        <div class="service-icon icon-proxy">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                            </svg>
-                        </div>
-                        <h3 class="service-name">Reverse Proxy</h3>
+    <!-- Post Form Section (hidden by default, shown when logged in) -->
+    <section id="postForm" class="post-form-section" style="display: none;">
+        <div class="container">
+            <div class="post-form-container">
+                <h2 style="color: #667eea; margin-bottom: 2rem; text-align: center;">
+                    <i class="fas fa-edit"></i> Tạo bài viết mới
+                </h2>
+                <form id="postFormElement">
+                    <div class="form-group">
+                        <label for="postTitle">
+                            <i class="fas fa-heading"></i> Tiêu đề bài viết
+                        </label>
+                        <input type="text" id="postTitle" required placeholder="Nhập tiêu đề...">
                     </div>
-                    <div class="card-body">
-                        <div class="status-badge status-active">
-                            <span class="status-indicator"></span>
-                            ACTIVE
-                        </div>
-                        <div class="service-details">
-                            <div class="detail-row">
-                                <span class="detail-label">Service:</span>
-                                <span class="detail-value">Nginx</span>
-                            </div>
-                            <div class="detail-row">
-                                <span class="detail-label">Port:</span>
-                                <span class="detail-value">80/443</span>
-                            </div>
-                            <div class="detail-row">
-                                <span class="detail-label">Load:</span>
-                                <span class="detail-value">Normal</span>
-                            </div>
-                        </div>
+                    <div class="form-group">
+                        <label for="postContent">
+                            <i class="fas fa-align-left"></i> Nội dung
+                        </label>
+                        <textarea id="postContent" rows="8" required placeholder="Nhập nội dung bài viết..."></textarea>
                     </div>
+                    <div class="form-group">
+                        <label for="postImage">
+                            <i class="fas fa-image"></i> Ảnh đại diện
+                        </label>
+                        <input type="file" id="postImage" accept="image/*" required>
+                    </div>
+                    <button type="submit" id="submitPost" class="submit-btn">
+                        <i class="fas fa-paper-plane"></i> Đăng bài
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="blog-layout">
+            <!-- Blog List - JavaScript sẽ render bài viết vào đây -->
+            <main class="blog-list" id="blogListContainer">
+                <div class="loading">Đang tải bài viết...</div>
+            </main>
+
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <div class="sidebar-widget">
+                    <h3><i class="fas fa-search"></i> Tìm kiếm</h3>
+                    <input type="text" class="search-box" placeholder="Tìm bài viết...">
                 </div>
 
-                <div class="service-card">
-    <div class="card-header">
-        <div class="service-icon icon-app">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="2" y="3" width="20" height="14" rx="2"/>
-                <path d="M8 21h8M12 17v4"/>
-            </svg>
-        </div>
-        <h3 class="service-name">App Runtime</h3>
-    </div>
-    <div class="card-body">
-        <div class="status-badge status-active">
-            <span class="status-indicator"></span>
-            ACTIVE
-        </div>
-        <div class="service-details">
-            <div class="detail-row">
-                <span class="detail-label">Runtime:</span>
-                <span class="detail-value">Python Flask</span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Container:</span>
-                <span class="detail-value monospace" id="container-id-display">Loading...</span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Memory:</span>
-                <span class="detail-value">256 MB</span>
-            </div>
-        </div>
-    </div>
-</div>
+                <div class="sidebar-widget">
+                    <h3><i class="far fa-folder-open"></i> Danh mục</h3>
+                    <ul class="category-list">
+                        <li><a href="#">Du lịch <span class="category-count">12</span></a></li>
+                        <li><a href="#">Ẩm thực <span class="category-count">8</span></a></li>
+                        <li><a href="#">Check-in <span class="category-count">15</span></a></li>
+                        <li><a href="#">Hướng dẫn <span class="category-count">6</span></a></li>
+                    </ul>
+                </div>
 
-<div class="service-card">
-    <div class="card-header">
-        <div id="db-icon-container" class="service-icon icon-database">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                <path d="M9 12l2 2 4-4"/>
-            </svg>
-        </div>
-        <h3 class="service-name">Database</h3>
-    </div>
-    <div class="card-body">
-
-        <div id="db-badge" class="status-badge">
-            <span class="status-indicator"></span>
-            <span id="db-badge-text">CHECKING...</span>
-        </div>
-
-        <div class="service-details">
-            <div class="detail-row">
-                <span class="detail-label">Engine:</span>
-                <span class="detail-value">PostgreSQL</span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Status:</span>
-                <span class="detail-value" id="db-status-text">...</span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Security:</span>
-                <span class="detail-value">Encrypted Zone</span>
-            </div>
+                <div class="sidebar-widget">
+                    <h3><i class="fas fa-thumbtack"></i> Bài viết mới nhất</h3>
+                    <ul class="recent-posts">
+                        <li class="recent-post-item">
+                            <a href="#">Sa Pa – Mùa nào đẹp nhất để đi du lịch?</a>
+                            <div class="recent-post-date"><i class="far fa-clock"></i> 05/12/2024</div>
+                        </li>
+                        <li class="recent-post-item">
+                            <a href="#">Ẩm thực Hội An – Những món ăn nhất định phải thử</a>
+                            <div class="recent-post-date"><i class="far fa-clock"></i> 01/12/2024</div>
+                        </li>
+                        <li class="recent-post-item">
+                            <a href="blog3.html">Hà Giang – Vùng đất của núi và mây</a>
+                            <div class="recent-post-date"><i class="far fa-clock"></i> 25/11/2024</div>
+                        </li>
+                    </ul>
+                </div>
+            </aside>
         </div>
     </div>
-</div>
-
-            </div>
-        </section>
-
-        <!-- Quick Actions Section -->
-        <section class="actions-section">
-            <h2 class="section-title">System Access</h2>
-            <div class="actions-grid">
-                <a href="/demo-blog" class="action-button">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
-                        <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
-                        <line x1="12" y1="22.08" x2="12" y2="12"/>
-                    </svg>
-                    <span>Hosted Applications</span>
-                </a>
-            </div>
-        </section>
-
-    </main>
 
     <!-- Footer -->
-    <footer class="dashboard-footer">
+    <footer>
         <div class="footer-content">
-            <p>&copy; 2024 MyMiniCloud Infrastructure | Secure by Design</p>
-            <p class="footer-tech">Powered by Docker · Nginx · Flask · PostgreSQL</p>
+            <h3><i class="fas fa-plane-departure"></i> Travel with me</h3>
+            <div class="footer-email">
+                <i class="far fa-envelope"></i> &nbsp; Email: cungdinhe.travel@gmail.com
+            </div>
+            <div class="social-links">
+                <a href="#"><i class="fab fa-facebook"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-youtube"></i></a>
+            </div>
+        </div>
+        <div class="copyright">
+            © 2025 Travel with me. All rights reserved.
         </div>
     </footer>
 
-    <script>
-    // 1. Hàm cập nhật đồng hồ Uptime (Giữ nguyên code cũ của Claude)
-    let startTime = Date.now();
-    function updateUptime() {
-        const elapsed = Date.now() - startTime;
-        const hours = Math.floor(elapsed / 3600000);
-        const minutes = Math.floor((elapsed % 3600000) / 60000);
-        const seconds = Math.floor((elapsed % 60000) / 1000);
-        document.getElementById('uptime').textContent =
-            `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-    }
-    setInterval(updateUptime, 1000);
-    updateUptime();
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span id="closeLoginModal" class="close">&times;</span>
+            <h2 style="text-align: center; color: #667eea; margin-bottom: 2rem;">
+                <i class="fas fa-user-circle"></i> Đăng nhập
+            </h2>
+            <form id="loginFormElement">
+                <div class="form-group">
+                    <label for="loginUsername">
+                        <i class="fas fa-user"></i> Tên đăng nhập
+                    </label>
+                    <input type="text" id="loginUsername" required placeholder="Nhập tên đăng nhập">
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">
+                        <i class="fas fa-lock"></i> Mật khẩu
+                    </label>
+                    <input type="password" id="loginPassword" required placeholder="Nhập mật khẩu">
+                </div>
+                <button type="submit" id="loginSubmit" class="submit-btn">
+                    <i class="fas fa-sign-in-alt"></i> Đăng nhập
+                </button>
+            </form>
+        </div>
+    </div>
 
-    // 2. HÀM MỚI: Gọi API Server để lấy dữ liệu thật
-    async function fetchSystemStatus() {
-        try {
-            // Gọi endpoint mà ta đã viết trong api-server
-            const response = await fetch('/api/status');
-            const data = await response.json();
-
-            // --- CẬP NHẬT APP RUNTIME ---
-            // Điền Container ID
-            document.getElementById('container-id-display').innerText = data.container_id;
-
-            // --- CẬP NHẬT DATABASE CARD ---
-            const dbBadge = document.getElementById('db-badge');
-            const dbBadgeText = document.getElementById('db-badge-text');
-            const dbStatusText = document.getElementById('db-status-text');
-            const dbIcon = document.getElementById('db-icon-container');
-
-            // Điền thông báo chi tiết
-            dbStatusText.innerText = data.db_status;
-
-            if (data.is_success) {
-                // TRƯỜNG HỢP THÀNH CÔNG (XANH)
-                dbBadge.className = 'status-badge status-connected'; // Class xanh trong CSS
-                dbBadgeText.innerText = 'CONNECTED';
-
-                dbStatusText.className = 'detail-value text-success';
-
-                dbIcon.className = 'service-icon icon-success';
-            } else {
-                // TRƯỜNG HỢP THẤT BẠI (ĐỎ)
-                dbBadge.className = 'status-badge status-error'; // Class đỏ trong CSS
-                dbBadgeText.innerText = 'DISCONNECTED';
-
-                dbStatusText.className = 'detail-value text-error';
-
-                dbIcon.className = 'service-icon icon-error';
-            }
-
-        } catch (error) {
-            console.error('Lỗi khi gọi API:', error);
-            document.getElementById('db-status-text').innerText = "API Error (Check Console)";
-        }
-    }
-
-    // Gọi hàm ngay lập tức khi vào trang
-    fetchSystemStatus();
-
-    // Tự động cập nhật mỗi 5 giây (Real-time monitoring)
-    setInterval(fetchSystemStatus, 5000);
-</script>
-
+    <!-- JavaScript -->
+    <script src="/js/blog-app.js"></script>
 </body>
 </html>

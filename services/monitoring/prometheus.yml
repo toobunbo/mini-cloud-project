@@ -1,0 +1,23 @@
+global:
+  scrape_interval: 5s # 5 giây quét 1 lần (Cho realtime)
+
+scrape_configs:
+  # Job 1: Tự theo dõi chính nó
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Job 2: Theo dõi Docker Container (thông qua cAdvisor)
+  - job_name: 'docker_containers'
+    static_configs:
+      - targets: ['cadvisor:8080'] # Tên service trong compose
+
+  # Job 3: Theo dõi MinIO (MinIO có sẵn metric xịn)
+  # Lưu ý: Cần set quyền public cho metrics hoặc cấu hình bearer token nếu MinIO chặn
+  - job_name: 'minio'
+    metrics_path: /minio/v2/metrics/cluster
+    static_configs:
+      - targets: ['storage-server:9000']
+  - job_name: 'node_exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']

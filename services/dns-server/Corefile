@@ -1,0 +1,18 @@
+.:53 {
+    errors
+    log
+
+    # --- 1. Rewrite: Đổi tên ảo thành tên Container ---
+    rewrite name db.cloud.local       database_server
+    rewrite name auth.cloud.local     auth_server
+    rewrite name api.cloud.local      api_server
+    rewrite name www.cloud.local      proxy_server
+    rewrite name s3.cloud.local       storage_server
+    rewrite name monitor.cloud.local  monitoring_server
+    rewrite name logs.cloud.local     logging_server
+
+    # --- 2. Forward tất cả sang Docker DNS ---
+    # Sau khi rewrite, request (ví dụ: "database_server") vẫn khớp với "."
+    # Docker DNS (127.0.0.11) sẽ lo việc trả về IP container hoặc đẩy tiếp ra Internet (8.8.8.8)
+    forward . 127.0.0.11
+}

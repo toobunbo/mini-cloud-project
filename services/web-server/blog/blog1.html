@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lịch trình du lịch Đà Lạt 3 ngày 2 đêm - Travel with me</title>
+    <!-- THÊM THƯ VIỆN FONT AWESOME ĐỂ DÙNG ICON HIỆN ĐẠI -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: #f9fafb;
+        }
+
+        /* Reset ảnh */
+        img { display: block; max-width: 100%; }
+
+        /* CSS chung cho các ảnh thumbnail nếu có */
+        .post-image img, .about-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* Tinh chỉnh icon */
+        i {
+            margin-right: 8px; /* Khoảng cách giữa icon và chữ */
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 1.2rem 0;
+            position: sticky;
+            z-index: 1000;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        }
+
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            color: white;
+            font-size: 1.5rem; /* Giảm nhẹ size vì icon vector to hơn emoji */
+            font-weight: bold;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+        }
+
+        .nav-menu a {
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .nav-menu a:hover {
+            opacity: 0.8;
+        }
+
+        /* --- ARTICLE HEADER --- */
+        .article-header {
+            position: relative;
+            height: 450px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: white;
+            overflow: hidden;
+            background: #667eea;
+        }
+
+        .header-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover;
+            z-index: 0;
+        }
+
+        .article-header::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 1;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 2;
+            padding: 0 2rem;
+            max-width: 900px;
+        }
+
+        .header-content h1 {
+            font-size: 2.8rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+            line-height: 1.3;
+        }
+
+        .article-meta {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            font-size: 1rem;
+            opacity: 0.95;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+        }
+
+        .article-meta span {
+            display: flex;
+            align-items: center;
+        }
+
+        /* --- ARTICLE CONTENT --- */
+        .article-container {
+            max-width: 800px;
+            margin: 3rem auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .article-content {
+            background: white;
+            padding: 3rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .article-content h2 {
+            color: #667eea;
+            font-size: 1.8rem;
+            margin: 2.5rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+        }
+
+        .article-content h2 i {
+            color: #764ba2; /* Icon màu đậm hơn tiêu đề chút */
+            font-size: 1.5rem;
+        }
+
+        .article-content h2:first-child {
+            margin-top: 0;
+        }
+
+        .article-content h3 {
+            color: #764ba2;
+            font-size: 1.4rem;
+            margin: 1.8rem 0 1rem;
+        }
+
+        .article-content p {
+            margin-bottom: 1.2rem;
+            color: #555;
+            text-align: justify;
+        }
+
+        .article-content ul {
+            margin: 1rem 0 1.5rem 2rem;
+        }
+
+        .article-content li {
+            margin-bottom: 0.8rem;
+            color: #555;
+        }
+
+        .article-content strong {
+            color: #333;
+        }
+
+        /* --- FEATURED IMAGE --- */
+        .featured-image {
+            width: 100%;
+            margin-bottom: 2rem;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .featured-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* Info Box */
+        .info-box {
+            background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            margin: 1.5rem 0;
+        }
+
+        .info-box strong {
+            color: #667eea;
+        }
+
+        /* Back Button */
+        .back-button {
+            display: inline-block;
+            margin-bottom: 1.5rem;
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            background: rgba(0,0,0,0.3);
+            padding: 8px 15px;
+            border-radius: 20px;
+            backdrop-filter: blur(5px);
+        }
+
+        .back-button:hover {
+            background: rgba(0,0,0,0.6);
+            padding-left: 15px;
+            transform: translateX(-5px);
+        }
+
+        /* Footer */
+        footer {
+            background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+            color: white;
+            padding: 3rem 0 2rem;
+            text-align: center;
+            margin-top: 4rem;
+        }
+
+        .footer-content h3 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            color: #667eea;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .footer-email {
+            color: #cbd5e0;
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 1.5rem 0;
+        }
+
+        .social-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.5rem;
+            transition: all 0.3s;
+            display: flex; /* Căn giữa icon */
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .social-links span {
+            font-size: 1rem; /* Chữ nhỏ hơn icon */
+        }
+
+        .social-links a:hover {
+            color: #667eea;
+            transform: translateY(-3px);
+        }
+
+        .copyright {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: #a0aec0;
+            font-size: 0.95rem;
+        }
+
+        @media (max-width: 768px) {
+            .article-header { height: 350px; }
+            .header-content h1 { font-size: 2rem; }
+            .article-content { padding: 2rem 1.5rem; }
+            .nav-menu { gap: 1.5rem; font-size: 0.9rem; }
+            .logo { font-size: 1.4rem; }
+        }
+
+        @media (max-width: 480px) {
+            nav { flex-direction: column; gap: 1rem; }
+            .article-meta { flex-direction: column; gap: 0.5rem; }
+            .article-content { padding: 1.5rem 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav>
+            <!-- Thay Emoji máy bay bằng Icon -->
+            <a href="/" class="logo"><i class="fas fa-paper-plane"></i> Travel with me</a>
+            <ul class="nav-menu">
+                <li><a href="/home.html">Home</a></li>
+                <li><a href="/blog/">Blog</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Article Header -->
+    <section class="article-header">
+        <img src="/images/dl.jpg" alt="banner" class="header-bg">
+
+        <div class="header-content">
+            <a href="/blog/" class="back-button"><i class="fas fa-arrow-left"></i> Quay lại danh sách bài viết</a>
+
+            <h1>Lịch trình du lịch Đà Lạt 3 ngày 2 đêm – Ăn gì, chơi gì?</h1>
+            <div class="article-meta">
+                <!-- Thay các emoji lịch, người, thẻ -->
+                <span><i class="far fa-calendar-alt"></i> 15 Tháng 11, 2024</span>
+                <span><i class="far fa-user"></i> Huelwen</span>
+                <span><i class="fas fa-tags"></i> Du lịch, Đà Lạt</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Article Content -->
+    <div class="article-container">
+
+        <article class="article-content">
+            <!-- ẢNH FEATURED FULL WIDTH -->
+            <div class="featured-image">
+                <img src="/images/dl_banner1.jpg" alt="banner">
+            </div>
+
+            <!-- Thay icon ngôi sao bằng icon bản đồ/địa điểm -->
+            <h2><i class="fas fa-map-marked-alt"></i> Giới thiệu chung về Đà Lạt</h2>
+            <p>Đà Lạt - thành phố ngàn hoa, nằm trên cao nguyên Lâm Viên với độ cao khoảng 1.500m so với mực nước biển. Khí hậu ôn hòa quanh năm với nhiệt độ dao động từ 15-24°C, Đà Lạt là điểm đến lý tưởng cho những ai yêu thích sự mát mẻ và phong cảnh thơ mộng.</p>
+
+            <!-- Thay icon lịch -->
+            <h2><i class="fas fa-route"></i> Lịch trình 3 ngày chi tiết</h2>
+
+            <h3>Ngày 1: Khám phá trung tâm thành phố</h3>
+            <ul>
+                <li><strong>Sáng:</strong> Check-in khách sạn, nghỉ ngơi</li>
+                <li><strong>Trưa:</strong> Ăn trưa tại Chợ Đà Lạt - thử nem nướng, bánh mì xíu mại</li>
+                <li><strong>Chiều:</strong> Dạo quanh Hồ Xuân Hương, chụp ảnh tại Quảng trường Lâm Viên</li>
+                <li><strong>Tối:</strong> Khám phá chợ đêm, thưởng thức đồ nướng và đồ uống nóng</li>
+            </ul>
+
+            <h3>Ngày 2: Chinh phục Langbiang và đồi chè</h3>
+            <ul>
+                <li><strong>Sáng:</strong> Xuất phát lên đỉnh Langbiang (đi bộ hoặc xe jeep)</li>
+                <li><strong>Trưa:</strong> Ăn trưa tại khu vực Langbiang</li>
+                <li><strong>Chiều:</strong> Check-in Đồi chè Cầu Đất - địa điểm sống ảo siêu đẹp</li>
+                <li><strong>Chiều muộn:</strong> Ghé Hồ Tuyền Lâm ngắm hoàng hôn</li>
+                <li><strong>Tối:</strong> Về trung tâm, thử bánh căn Đà Lạt</li>
+            </ul>
+
+            <h3>Ngày 3: Thác nước và vườn hoa</h3>
+            <ul>
+                <li><strong>Sáng:</strong> Thác Datanla - trải nghiệm trò chơi mạo hiểm</li>
+                <li><strong>Trưa:</strong> Ăn trưa và check-out khách sạn</li>
+                <li><strong>Chiều:</strong> Vườn hoa thành phố - chụp ảnh với đủ loại hoa</li>
+                <li><strong>Tối:</strong> Ăn tối và chuẩn bị về</li>
+            </ul>
+
+            <!-- Thay icon mì tôm bằng dao nĩa -->
+            <h2><i class="fas fa-utensils"></i> Ăn uống tại Đà Lạt</h2>
+            <div class="info-box">
+                <p><strong>Món ăn không thể bỏ qua:</strong></p>
+                <ul>
+                    <li><strong>Nem nướng Đà Lạt:</strong> Đặc sản nổi tiếng, giá 30-50k/suất</li>
+                    <li><strong>Bánh căn:</strong> Món ăn vặt được yêu thích, 5k/chiếc</li>
+                    <li><strong>Kem bơ:</strong> Thơm ngon béo ngậy, giá 20-30k</li>
+                    <li><strong>Lẩu gà lá é:</strong> Món đặc trưng vùng cao, 150-200k/nồi</li>
+                    <li><strong>Sữa đậu nành nóng:</strong> Hoàn hảo cho thời tiết lạnh, 10-15k/ly</li>
+                </ul>
+            </div>
+
+            <!-- Thay icon túi tiền bằng ví -->
+            <h2><i class="fas fa-wallet"></i> Chi phí tham khảo</h2>
+            <ul>
+                <li><strong>Khách sạn:</strong> 300-500k/đêm (phòng 2 người)</li>
+                <li><strong>Ăn uống:</strong> 200-300k/người/ngày</li>
+                <li><strong>Di chuyển:</strong> Thuê xe máy 100-150k/ngày</li>
+                <li><strong>Vé tham quan:</strong> 200-300k tổng</li>
+                <li><strong>Tổng chi phí:</strong> Khoảng 2-3 triệu/người cho 3 ngày</li>
+            </ul>
+
+            <!-- Thay icon ghi chú bằng bóng đèn (tips) -->
+            <h2><i class="far fa-lightbulb"></i> Kinh nghiệm và lưu ý</h2>
+            <ul>
+                <li>Mang theo áo ấm, đặc biệt vào buổi sáng và tối</li>
+                <li>Đặt chỗ khách sạn trước, nhất là vào cuối tuần và dịp lễ</li>
+                <li>Thuê xe máy để di chuyển linh hoạt hơn</li>
+                <li>Nên đi vào tháng 11-4 để tránh mưa nhiều</li>
+                <li>Đừng quên mang theo camera để lưu lại khoảnh khắc đẹp</li>
+                <li>Mua đặc sản về như dâu tây, atiso, cà phê Đà Lạt</li>
+            </ul>
+
+            <div class="info-box">
+                <p><em>Hy vọng chia sẻ của mình sẽ giúp các bạn có một chuyến đi Đà Lạt thật tuyệt vời! Nếu có câu hỏi gì, đừng ngại để lại comment nhé! 🌸</em></p>
+            </div>
+        </article>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <h3><i class="fas fa-plane-departure"></i> Travel with me</h3>
+            <div class="footer-email">
+                <i class="far fa-envelope"></i> &nbsp; Email: cungdinhe.travel@gmail.com
+            </div>
+            <div class="social-links">
+                <a href="#"><i class="fab fa-facebook"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-youtube"></i></a>
+            </div>
+        </div>
+        <div class="copyright">
+            © 2025 Travel with me. All rights reserved.
+        </div>
+    </footer>
+</body>
+</html>

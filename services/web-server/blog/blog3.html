@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Top 5 địa điểm sống ảo ở Đà Nẵng - Travel with me</title>
+    <!-- Thư viện Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.8; color: #333; background: #f9fafb; }
+
+        /* Reset ảnh */
+        img { display: block; max-width: 100%; }
+
+        /* Tinh chỉnh icon */
+        i { margin-right: 8px; }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 1.2rem 0;
+            position: sticky;
+            z-index: 1000;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        }
+
+        nav { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 2rem; }
+        .logo { color: white; font-size: 1.5rem; font-weight: bold; text-decoration: none; display: flex; align-items: center; }
+
+        .nav-menu { display: flex; gap: 2.5rem; list-style: none; }
+        .nav-menu a { color: white; text-decoration: none; transition: all 0.3s; font-weight: 500; }
+        .nav-menu a:hover { opacity: 0.8; }
+
+        /* --- ARTICLE HEADER (HERO STYLE) --- */
+        .article-header {
+            position: relative;
+            height: 450px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: white;
+            overflow: hidden;
+            background: #0ea5e9; /* Màu nền dự phòng xanh dương */
+        }
+
+        /* Ảnh nền chìm */
+        .header-bg {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover;
+            z-index: 0;
+        }
+
+        /* Lớp phủ tối */
+        .article-header::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 1;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 2;
+            padding: 0 2rem;
+            max-width: 900px;
+        }
+
+        .header-content h1 {
+            font-size: 2.8rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+            line-height: 1.3;
+        }
+
+        .article-meta {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            font-size: 1rem;
+            opacity: 0.95;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+        }
+        .article-meta span { display: flex; align-items: center; }
+
+        /* --- ARTICLE CONTENT --- */
+        .article-container {
+            max-width: 800px;
+            margin: 3rem auto; /* Thụt xuống dưới header */
+            padding: 0 2rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .article-content {
+            background: white;
+            padding: 3rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .article-content h2 {
+            color: #0ea5e9; /* Màu xanh dương Đà Nẵng */
+            font-size: 1.8rem;
+            margin: 2.5rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+        }
+
+        .article-content h2 i { font-size: 1.5rem; color: #0284c7; }
+        .article-content h2:first-child { margin-top: 0; }
+
+        /* Style riêng cho Location Card */
+        .location-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
+        }
+        .location-card:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+
+        .location-card h3 {
+            color: #0284c7;
+            margin: 0 0 1rem 0;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+        }
+        .location-card h3 i { color: #f59e0b; margin-right: 10px; }
+
+        .article-content p { margin-bottom: 1.2rem; color: #555; text-align: justify; }
+        .article-content ul { margin: 1rem 0 1.5rem 2rem; }
+        .article-content li { margin-bottom: 0.8rem; color: #555; }
+        .article-content strong { color: #333; }
+
+        /* Featured Image Full Width */
+        .featured-image {
+            width: 100%;
+            margin-bottom: 2rem;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .featured-image img { width: 100%; height: auto; display: block; }
+
+        /* Info Box */
+        .info-box {
+            background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 4px solid #0ea5e9;
+            margin: 1.5rem 0;
+        }
+        .info-box strong { color: #0ea5e9; }
+
+        /* Highlight Box (Weather) */
+        .highlight-box {
+            background: linear-gradient(135deg, #ffedd5 0%, #fed7aa 100%);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 4px solid #f97316;
+            margin: 1.5rem 0;
+        }
+        .highlight-box strong { color: #c2410c; }
+
+        /* Back Button */
+        .back-button {
+            display: inline-block;
+            margin-bottom: 1.5rem;
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            background: rgba(0,0,0,0.3);
+            padding: 8px 15px;
+            border-radius: 20px;
+            backdrop-filter: blur(5px);
+        }
+        .back-button:hover { background: rgba(0,0,0,0.6); padding-left: 15px; }
+
+        /* Footer */
+        footer {
+            background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+            color: white;
+            padding: 3rem 0 2rem;
+            text-align: center;
+            margin-top: 4rem;
+        }
+        .footer-content h3 { font-size: 1.8rem; margin-bottom: 1rem; color: #667eea; display: flex; justify-content: center; align-items: center; }
+        .footer-email { color: #cbd5e0; font-size: 1.1rem; margin-bottom: 1.5rem; }
+        .social-links { display: flex; justify-content: center; gap: 2rem; margin: 1.5rem 0; }
+        .social-links a { color: white; text-decoration: none; font-size: 1.5rem; transition: all 0.3s; }
+        .social-links a:hover { color: #667eea; transform: translateY(-3px); }
+        .copyright { margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); color: #a0aec0; font-size: 0.95rem; }
+
+        @media (max-width: 768px) {
+            .article-header { height: 350px; }
+            .header-content h1 { font-size: 2rem; }
+            .article-content { padding: 2rem 1.5rem; }
+            .nav-menu { gap: 1.5rem; font-size: 0.9rem; }
+        }
+        @media (max-width: 480px) {
+            nav { flex-direction: column; gap: 1rem; }
+            .article-meta { flex-direction: column; gap: 0.5rem; }
+            .article-content { padding: 1.5rem 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav>
+            <a href="/" class="logo"><i class="fas fa-paper-plane"></i> Travel with me</a>
+            <ul class="nav-menu">
+                <li><a href="/home.html">Home</a></li>
+                <li><a href="/blog/">Blog</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Article Header (HERO) -->
+    <section class="article-header">
+        <!-- Ảnh nền Banner Đà Nẵng -->
+        <img src="/images/dn-banner.jpg" alt="Đà Nẵng Banner" class="header-bg">
+
+        <div class="header-content">
+            <a href="/blog/" class="back-button"><i class="fas fa-arrow-left"></i> Quay lại danh sách bài viết</a>
+
+            <h1>Top 5 địa điểm sống ảo ở Đà Nẵng mà bạn không thể bỏ qua</h1>
+            <div class="article-meta">
+                <span><i class="far fa-calendar-alt"></i> 25 Tháng 10, 2021</span>
+                <span><i class="far fa-user"></i> Huelwen</span>
+                <span><i class="fas fa-tags"></i> Du lịch, Đà Nẵng</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Article Content -->
+    <div class="article-container">
+
+        <article class="article-content">
+            <!-- Ảnh Featured Full Width -->
+            <div class="featured-image">
+                <img src="/images/dn-banner0.jpg" alt="Cầu Vàng Đà Nẵng">
+            </div>
+
+            <h2><i class="fas fa-city"></i> Giới thiệu Đà Nẵng</h2>
+            <p>Đà Nẵng được mệnh danh là "Thành phố đáng sống nhất Việt Nam" với khí hậu ôn hòa, cơ sở hạ tầng hiện đại và cảnh quan thiên nhiên tuyệt đẹp. Thành phố nằm ở miền Trung Việt Nam, sở hữu bờ biển dài, núi non hùng vĩ và những công trình kiến trúc độc đáo.</p>
+
+            <h2><i class="fas fa-camera-retro"></i> Top 5 địa điểm đẹp nhất</h2>
+
+            <div class="location-card">
+                <h3><i class="fas fa-dragon"></i> 1. Cầu Rồng</h3>
+                <p>Biểu tượng của Đà Nẵng, Cầu Rồng là một trong những cây cầu độc đáo nhất Việt Nam với thiết kế hình rồng uốn lượn.</p>
+                <ul>
+                    <li><strong>Thời gian đẹp nhất:</strong> Tối từ 18h-22h khi cầu được bật đèn</li>
+                    <li><strong>Lưu ý:</strong> Cuối tuần có phun lửa và nước lúc 21h</li>
+                    <li><strong>Chi phí:</strong> Miễn phí</li>
+                </ul>
+            </div>
+
+            <div class="location-card">
+                <h3><i class="fas fa-heart"></i> 2. Cầu Tình Yêu</h3>
+                <p>Cầu Tình Yêu với hình dáng cánh buồm độc đáo và những cây đèn lồng trái tim đã trở thành địa điểm check-in lãng mạn yêu thích của giới trẻ.</p>
+                <ul>
+                    <li><strong>Thời gian đẹp nhất:</strong> Hoàng hôn hoặc tối khi có đèn</li>
+                    <li><strong>Góc chụp:</strong> Từ bờ sông Hàn hoặc từ trên cầu nhìn ra biển</li>
+                    <li><strong>Chi phí:</strong> Miễn phí</li>
+                </ul>
+            </div>
+
+            <div class="location-card">
+                <h3><i class="fas fa-mountain"></i> 3. Bà Nà Hills</h3>
+                <p>Khu du lịch nổi tiếng với Cầu Vàng - bàn tay khổng lồ nâng đỡ cây cầu vàng giữa mây, làng Pháp cổ kính và vườn hoa tuyệt đẹp.</p>
+                <ul>
+                    <li><strong>Vé:</strong> Khoảng 750-850k/người (bao gồm cáp treo)</li>
+                    <li><strong>Thời gian:</strong> Cả ngày (từ 7h sáng)</li>
+                    <li><strong>Highlight:</strong> Cầu Vàng, làng Pháp, vườn hoa Le Jardin</li>
+                </ul>
+            </div>
+
+            <div class="location-card">
+                <h3><i class="fas fa-store"></i> 4. Chợ Cồn</h3>
+                <p>Thiên đường ẩm thực địa phương với đủ loại món ăn đường phố giá rẻ. Đây là nơi khám phá văn hóa ẩm thực chân thực nhất.</p>
+                <ul>
+                    <li><strong>Thời gian:</strong> Tối từ 17h-23h</li>
+                    <li><strong>Món nên thử:</strong> Bánh tráng cuốn thịt heo, mì Quảng</li>
+                    <li><strong>Chi phí:</strong> 30-80k/món</li>
+                </ul>
+            </div>
+
+            <div class="location-card">
+                <h3><i class="fas fa-umbrella-beach"></i> 5. Biển Mỹ Khê</h3>
+                <p>Được tạp chí Forbes bình chọn là một trong những bãi biển quyến rũ nhất hành tinh với bãi cát trắng mịn và nước biển trong xanh.</p>
+                <ul>
+                    <li><strong>Thời gian đẹp nhất:</strong> Sáng sớm hoặc chiều mát</li>
+                    <li><strong>Hoạt động:</strong> Bơi lội, lướt sóng, dù bay</li>
+                    <li><strong>Chi phí:</strong> Miễn phí</li>
+                </ul>
+            </div>
+
+            <h2><i class="fas fa-wallet"></i> Chi phí tham khảo</h2>
+            <div class="info-box">
+                <p><strong>Chi phí ước tính cho 3 ngày 2 đêm (1 người):</strong></p>
+                <ul>
+                    <li><strong>Vé máy bay/tàu:</strong> 500k-2tr (tùy điểm xuất phát)</li>
+                    <li><strong>Khách sạn:</strong> 300-800k/đêm × 2 = 600k-1.6tr</li>
+                    <li><strong>Ăn uống:</strong> 200-350k/ngày × 3 = 600k-1tr</li>
+                    <li><strong>Di chuyển:</strong> Thuê xe máy 100k × 3 = 300k</li>
+                    <li><strong>Vé Bà Nà Hills:</strong> 750-850k</li>
+                    <li><strong>Tổng cộng:</strong> 3-6 triệu/người</li>
+                </ul>
+            </div>
+
+            <h2><i class="fas fa-cloud-sun"></i> Thời tiết – Mùa nào đẹp nhất?</h2>
+            <div class="highlight-box">
+                <ul>
+                    <li><strong>Tháng 2-5:</strong> Mùa xuân hè, thời tiết đẹp nhất, ít mưa, nắng vừa phải.</li>
+                    <li><strong>Tháng 6-8:</strong> Mùa hè nóng, thích hợp đi biển.</li>
+                    <li><strong>Tháng 9-11:</strong> Mùa mưa bão, nên cân nhắc kỹ trước khi đi.</li>
+                </ul>
+            </div>
+
+            <h2><i class="fas fa-clipboard-list"></i> Lưu ý khi đi Đà Nẵng</h2>
+            <ul>
+                <li>Thuê xe máy để di chuyển linh hoạt, đường xá Đà Nẵng rất rộng rãi</li>
+                <li>Mang kem chống nắng khi đi biển, nắng miền Trung khá gắt</li>
+                <li>Đặt vé Bà Nà Hills online trước để tránh xếp hàng</li>
+                <li>Có thể kết hợp với Hội An (cách 30km) trong cùng chuyến đi</li>
+            </ul>
+
+            <div class="info-box">
+                <p><em>Đà Nẵng là thành phố đáng sống và cũng đáng đến! Chúc các bạn có chuyến đi thật vui và có thật nhiều ảnh đẹp mang về! 🌊🏖️</em></p>
+            </div>
+        </article>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <h3><i class="fas fa-plane-departure"></i> Travel with me</h3>
+            <div class="footer-email">
+                <i class="far fa-envelope"></i> &nbsp; Email: cungdinhe.travel@gmail.com
+            </div>
+            <div class="social-links">
+                <a href="#"><i class="fab fa-facebook"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-youtube"></i></a>
+            </div>
+        </div>
+        <div class="copyright">
+            © 2025 Travel with me. All rights reserved.
+        </div>
+    </footer>
+</body>
+</html>

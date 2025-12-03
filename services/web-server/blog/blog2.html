@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kinh nghiệm du lịch Phú Quốc tự túc - Travel with me</title>
+    <!-- Thư viện Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.8; color: #333; background: #f9fafb; }
+
+        /* Reset ảnh */
+        img { display: block; max-width: 100%; }
+
+        /* Tinh chỉnh icon */
+        i { margin-right: 8px; }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 1.2rem 0;
+            position: sticky;
+            z-index: 1000;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        }
+
+        nav { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 2rem; }
+        .logo { color: white; font-size: 1.5rem; font-weight: bold; text-decoration: none; display: flex; align-items: center; }
+
+        .nav-menu { display: flex; gap: 2.5rem; list-style: none; }
+        .nav-menu a { color: white; text-decoration: none; transition: all 0.3s; font-weight: 500; }
+        .nav-menu a:hover { opacity: 0.8; }
+
+        /* --- ARTICLE HEADER (HERO STYLE) --- */
+        .article-header {
+            position: relative;
+            height: 450px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: white;
+            overflow: hidden;
+            background: #0891b2; /* Màu nền dự phòng xanh biển */
+        }
+
+        /* Ảnh nền chìm */
+        .header-bg {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover;
+            z-index: 0;
+        }
+
+        /* Lớp phủ tối */
+        .article-header::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 1;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 2;
+            padding: 0 2rem;
+            max-width: 900px;
+        }
+
+        .header-content h1 {
+            font-size: 2.8rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+            line-height: 1.3;
+        }
+
+        .article-meta {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            font-size: 1rem;
+            opacity: 0.95;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+        }
+        .article-meta span { display: flex; align-items: center; }
+
+        /* --- ARTICLE CONTENT --- */
+        .article-container {
+            max-width: 800px;
+            margin: 3rem auto; /* Thụt xuống dưới header */
+            padding: 0 2rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .article-content {
+            background: white;
+            padding: 3rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .article-content h2 {
+            color: #0891b2; /* Màu xanh biển cho Phú Quốc */
+            font-size: 1.8rem;
+            margin: 2.5rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+        }
+
+        .article-content h2 i { font-size: 1.5rem; color: #0e7490; }
+        .article-content h2:first-child { margin-top: 0; }
+
+        .article-content h3 { color: #0e7490; font-size: 1.4rem; margin: 1.8rem 0 1rem; }
+        .article-content p { margin-bottom: 1.2rem; color: #555; text-align: justify; }
+        .article-content ul { margin: 1rem 0 1.5rem 2rem; }
+        .article-content li { margin-bottom: 0.8rem; color: #555; }
+        .article-content strong { color: #333; }
+
+        /* Featured Image Full Width */
+        .featured-image {
+            width: 100%;
+            margin-bottom: 2rem;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .featured-image img { width: 100%; height: auto; display: block; }
+
+        /* Info Box */
+        .info-box {
+            background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 4px solid #0891b2;
+            margin: 1.5rem 0;
+        }
+        .info-box strong { color: #0891b2; }
+
+        /* Highlight Box (Vàng) */
+        .highlight-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 4px solid #f59e0b;
+            margin: 1.5rem 0;
+        }
+        .highlight-box strong { color: #d97706; }
+
+        /* Back Button */
+        .back-button {
+            display: inline-block;
+            margin-bottom: 1.5rem;
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            background: rgba(0,0,0,0.3);
+            padding: 8px 15px;
+            border-radius: 20px;
+            backdrop-filter: blur(5px);
+        }
+        .back-button:hover { background: rgba(0,0,0,0.6); padding-left: 15px; }
+
+        /* Footer */
+        footer {
+            background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+            color: white;
+            padding: 3rem 0 2rem;
+            text-align: center;
+            margin-top: 4rem;
+        }
+        .footer-content h3 { font-size: 1.8rem; margin-bottom: 1rem; color: #667eea; display: flex; justify-content: center; align-items: center; }
+        .footer-email { color: #cbd5e0; font-size: 1.1rem; margin-bottom: 1.5rem; }
+        .social-links { display: flex; justify-content: center; gap: 2rem; margin: 1.5rem 0; }
+        .social-links a { color: white; text-decoration: none; font-size: 1.5rem; transition: all 0.3s; }
+        .social-links a:hover { color: #667eea; transform: translateY(-3px); }
+        .copyright { margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); color: #a0aec0; font-size: 0.95rem; }
+
+        @media (max-width: 768px) {
+            .article-header { height: 350px; }
+            .header-content h1 { font-size: 2rem; }
+            .article-content { padding: 2rem 1.5rem; }
+            .nav-menu { gap: 1.5rem; font-size: 0.9rem; }
+        }
+        @media (max-width: 480px) {
+            nav { flex-direction: column; gap: 1rem; }
+            .article-meta { flex-direction: column; gap: 0.5rem; }
+            .article-content { padding: 1.5rem 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav>
+            <a href="/" class="logo"><i class="fas fa-paper-plane"></i> Travel with me</a>
+            <ul class="nav-menu">
+                <li><a href="/home.html">Home</a></li>
+                <li><a href="/blog/">Blog</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Article Header (HERO) -->
+    <section class="article-header">
+        <!-- Ảnh nền Banner Phú Quốc -->
+        <img src="/images/pq-banner.jpg" alt="Phú Quốc Banner" class="header-bg">
+
+        <div class="header-content">
+            <a href="/blog/" class="back-button"><i class="fas fa-arrow-left"></i> Quay lại danh sách bài viết</a>
+
+            <h1>Kinh nghiệm du lịch Phú Quốc tự túc – Chi phí, lịch trình, ăn uống</h1>
+            <div class="article-meta">
+                <span><i class="far fa-calendar-alt"></i> 20 Tháng 11, 2023</span>
+                <span><i class="far fa-user"></i> Huelwen</span>
+                <span><i class="fas fa-tags"></i> Du lịch biển, Phú Quốc</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Article Content -->
+    <div class="article-container">
+
+        <article class="article-content">
+            <!-- Ảnh Featured Full Width -->
+            <div class="featured-image">
+                <img src="/images/pq-banner1.jpg" alt="Phú Quốc Featured">
+            </div>
+
+            <h2><i class="fas fa-umbrella-beach"></i> Giới thiệu về đảo Phú Quốc</h2>
+            <p>Phú Quốc - hòn đảo ngọc nổi tiếng nhất Việt Nam, nằm ở phía Nam tỉnh Kiên Giang với diện tích khoảng 574 km². Đảo sở hữu những bãi biển tuyệt đẹp với nước trong xanh, cát trắng mịn màng cùng hệ sinh thái đa dạng. Phú Quốc không chỉ thu hút du khách bởi vẻ đẹp tự nhiên mà còn bởi ẩm thực phong phú và các hoạt động giải trí hấp dẫn.</p>
+
+            <h2><i class="fas fa-plane"></i> Đi lại và di chuyển trong đảo</h2>
+            <ul>
+                <li><strong>Máy bay:</strong> Bay từ Hà Nội/TP.HCM đến sân bay Phú Quốc (khoảng 1-2 tiếng)</li>
+                <li><strong>Di chuyển trên đảo:</strong> Thuê xe máy (150-200k/ngày) hoặc xe ô tô tự lái (600-800k/ngày)</li>
+                <li><strong>Taxi/Grab:</strong> Có sẵn nhưng chi phí cao hơn</li>
+                <li><strong>Lưu ý:</strong> Nên thuê xe máy để tự do khám phá đảo, đường đi khá dễ dàng</li>
+            </ul>
+
+            <h2><i class="fas fa-map-marked-alt"></i> Lịch trình gợi ý</h2>
+
+            <h3>VinWonders & Safari</h3>
+            <p>VinWonders Phú Quốc là công viên chủ đề lớn nhất Việt Nam với đa dạng trò chơi, show diễn và khu vực Safari độc đáo. Đây là điểm đến lý tưởng cho cả gia đình.</p>
+            <ul>
+                <li><strong>Thời gian:</strong> Cả ngày (8h sáng - 9h tối)</li>
+                <li><strong>Vé:</strong> Khoảng 600-800k/người (combo VinWonders + Safari)</li>
+                <li><strong>Nên đi:</strong> Vào ngày thường để tránh đông</li>
+            </ul>
+
+            <h3>Bãi Sao & Bãi Khem</h3>
+            <p>Hai bãi biển đẹp nhất Phú Quốc với nước trong xanh, cát trắng mịn. Bãi Sao nổi tiếng và đông người hơn, còn Bãi Khem hoang sơ và yên tĩnh hơn.</p>
+            <ul>
+                <li><strong>Thời gian:</strong> Sáng sớm hoặc chiều mát</li>
+                <li><strong>Hoạt động:</strong> Bơi lội, chụp ảnh, ăn hải sản tươi sống</li>
+                <li><strong>Chi phí:</strong> Miễn phí vào bãi biển, thuê ghế nằm 50-100k</li>
+            </ul>
+
+            <h3>Chợ đêm Phú Quốc</h3>
+            <p>Trung tâm ẩm thực và mua sắm về đêm, nơi bạn có thể thưởng thức đủ loại hải sản tươi sống và mua đặc sản về làm quà.</p>
+            <ul>
+                <li><strong>Thời gian:</strong> 17h - 23h hàng ngày</li>
+                <li><strong>Món ăn nên thử:</strong> Nhum nướng, cua hấp, ốc hương, ghẹ rang</li>
+                <li><strong>Mua sắm:</strong> Hồ tiêu, rượu sim, nước mắm, khô cá</li>
+            </ul>
+
+            <h2><i class="fas fa-hotel"></i> Khách sạn – Resort gợi ý</h2>
+            <div class="info-box">
+                <p><strong>Phân khúc giá:</strong></p>
+                <ul>
+                    <li><strong>Bình dân (300-500k/đêm):</strong> Homestay, khách sạn 2-3 sao gần trung tâm</li>
+                    <li><strong>Trung bình (800k-1.5tr/đêm):</strong> Khách sạn 4 sao, có bể bơi</li>
+                    <li><strong>Cao cấp (2-5tr/đêm):</strong> Resort 5 sao bãi biển như JW Marriott, Vinpearl</li>
+                </ul>
+                <p><strong>Lưu ý:</strong> Nên đặt phòng sớm vào mùa cao điểm (tháng 11-4) để có giá tốt</p>
+            </div>
+
+            <h2><i class="fas fa-utensils"></i> Đặc sản Phú Quốc</h2>
+
+            <h3>Gỏi cá trích Phú Quốc</h3>
+            <p>Món ăn đặc trưng được làm từ cá trích tươi, trộn với rau sống, lạc rang và nước mắm chua ngọt. Vị ngon khó quên!</p>
+            <ul>
+                <li><strong>Giá:</strong> 80-150k/phần</li>
+                <li><strong>Địa điểm:</strong> Các nhà hàng hải sản, chợ đêm</li>
+            </ul>
+
+            <h3>Hải sản tươi sống</h3>
+            <p>Phú Quốc nổi tiếng với hải sản tươi ngon: ghẹ, tôm hùm, nhum, ốc... Nên ăn tại các nhà hàng ven biển hoặc chợ đêm.</p>
+            <ul>
+                <li><strong>Giá:</strong> Tùy loại, từ 200-500k/kg</li>
+                <li><strong>Tips:</strong> Hỏi giá trước khi chế biến</li>
+            </ul>
+
+            <h3>Hồ tiêu Phú Quốc</h3>
+            <p>Đặc sản nổi tiếng, hồ tiêu Phú Quốc có hương vị đặc trưng, cay nồng và thơm. Đây là món quà ý nghĩa mua về.</p>
+            <ul>
+                <li><strong>Giá:</strong> 150-300k/kg tùy loại</li>
+                <li><strong>Mua ở đâu:</strong> Chợ đêm, siêu thị, vườn tiêu</li>
+            </ul>
+
+            <h2><i class="fas fa-wallet"></i> Tổng chi phí & mẹo tiết kiệm</h2>
+            <div class="highlight-box">
+                <p><strong>Chi phí ước tính cho 3 ngày 2 đêm (1 người):</strong></p>
+                <ul>
+                    <li><strong>Vé máy bay:</strong> 1.5-3 triệu (khứ hồi)</li>
+                    <li><strong>Khách sạn:</strong> 600k-1tr/đêm × 2 = 1.2-2 triệu</li>
+                    <li><strong>Ăn uống:</strong> 300-400k/ngày × 3 = 900k-1.2tr</li>
+                    <li><strong>Di chuyển:</strong> Thuê xe máy 150k × 3 = 450k</li>
+                    <li><strong>Vé tham quan:</strong> 800k-1tr</li>
+                    <li><strong>Tổng cộng:</strong> 5-8 triệu/người</li>
+                </ul>
+            </div>
+
+            <h3><i class="far fa-lightbulb"></i> Mẹo tiết kiệm:</h3>
+            <ul>
+                <li>Đặt vé máy bay sớm và theo dõi các chương trình khuyến mãi</li>
+                <li>Chọn khách sạn/homestay xa trung tâm một chút để giá rẻ hơn</li>
+                <li>Ăn tại các quán ăn địa phương thay vì nhà hàng du lịch</li>
+                <li>Đi vào mùa thấp điểm (tháng 5-10) giá sẽ rẻ hơn nhiều</li>
+                <li>Thuê xe máy thay vì taxi/grab để tiết kiệm</li>
+                <li>Mua combo vé tham quan để được giảm giá</li>
+            </ul>
+
+            <div class="info-box">
+                <p><em>Phú Quốc là điểm đến tuyệt vời cho kỳ nghỉ biển! Hy vọng những chia sẻ này giúp bạn có chuyến đi thật vui và tiết kiệm. Đừng quên chia sẻ trải nghiệm của bạn nhé! 🌊☀️</em></p>
+            </div>
+        </article>
+    </div>
+
+    <!-- Footer -->
+   <footer>
+        <div class="footer-content">
+            <h3><i class="fas fa-plane-departure"></i> Travel with me</h3>
+            <div class="footer-email">
+                <i class="far fa-envelope"></i> &nbsp; Email: cungdinhe.travel@gmail.com
+            </div>
+            <div class="social-links">
+                <a href="#"><i class="fab fa-facebook"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-youtube"></i></a>
+            </div>
+        </div>
+        <div class="copyright">
+            © 2025 Travel with me. All rights reserved.
+        </div>
+    </footer>
+</body>
+</html>
