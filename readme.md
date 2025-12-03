@@ -33,34 +33,6 @@ Mini Cloud là mô hình mô phỏng hạ tầng **microservices** theo tư duy 
 
 ---
 
-## 3) Repo Structure (tham khảo)
-> Bạn có thể chỉnh lại cho khớp repo của bạn — phần này chỉ mô tả theo best-practice.
+## 3) Repo Structure
 
-```txt
-.
-├── infrastructure/
-│   ├── docker-compose.yml
-│   ├── nginx/
-│   │   └── nginx.conf
-│   └── base-images/
-│       └── python-golden/
-│           └── Dockerfile
-├── services/
-│   ├── web-server/
-│   │   ├── Dockerfile
-│   │   └── (static html/css/js)
-│   ├── api-server/
-│   │   ├── Dockerfile
-│   │   ├── app.py
-│   │   └── requirements.txt
-│   ├── auth-server/
-│   │   ├── Dockerfile
-│   │   ├── app.py
-│   │   └── requirements.txt
-│   ├── database/
-│   │   └── init.sql
-│   └── monitoring/
-│       └── prometheus.yml
-└── .github/
-    └── workflows/
-        └── cicd.yml
+Demo bổ sung
