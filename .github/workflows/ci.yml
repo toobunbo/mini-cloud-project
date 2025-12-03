@@ -61,6 +61,10 @@ jobs:
         echo "Running Hadolint..."
         # Tìm tất cả Dockerfile và quét (Bỏ qua lỗi DL3008 về version apt)
         find services -name "Dockerfile" -print0 | xargs -0 -I {} hadolint --ignore DL3008 {}
+    - name: Build Golden Image
+      run: |
+        echo "Building Python Golden Image..."
+        docker build -t my-mini-cloud/python-golden:v1 ./infrastructure/base-images/python-golden
 
     # 7. INTEGRATION TEST: Thử dựng hệ thống (Build Test)
     # Bước này thay thế cho việc AWS CodeBuild bị khóa Docker
