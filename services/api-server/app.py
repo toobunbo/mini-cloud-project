@@ -128,26 +128,21 @@ def upload_file(current_user_id):
     file = request.files['file']
     if file.filename == '': return jsonify({'error': 'No file selected'}), 400
 
+    # Đặt tên file unique để tránh trùng lặp
     filename = f"user_{current_user_id}_{file.filename}"
     bucket_name = 'travel-avatars'
 
     try:
+        # Tự động tạo bucket nếu chưa có
         try: s3.create_bucket(Bucket=bucket_name)
         except: pass
 
+        # Upload
         s3.upload_fileobj(file, bucket_name, filename, ExtraArgs={'ContentType': file.content_type})
 
-        # --- ĐOẠN SỬA QUAN TRỌNG NHẤT ---
-        # Lấy Host từ Header mà trình duyệt gửi lên (VD: 13.211.149.243:4444)
-        # Nginx đã forward header này vào rồi.
-        host_header = request.headers.get('Host')
-
-        # Nếu chạy sau proxy, lấy scheme (http/https) từ header
-        scheme = request.headers.get('X-Forwarded-Proto', 'http')
-
-        # Tạo URL động dựa theo địa chỉ người dùng đang truy cập
-        url = f"{scheme}://{host_header}/storage/{bucket_name}/{filename}"
-        # --------------------------------
+        # Trả về URL để hiển thị ảnh
+        # Lưu ý: URL này phải đi qua Proxy (port 8080)
+        url = f"http://13.211.149.232:4444/storage/{bucket_name}/{filename}"
 
         return jsonify({'url': url}), 200
     except Exception as e:
