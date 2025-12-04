@@ -142,7 +142,7 @@ def upload_file(current_user_id):
 
         # Trả về URL để hiển thị ảnh
         # Lưu ý: URL này phải đi qua Proxy (port 8080)
-        url = f"http://13.211.149.232/:4444/storage/{bucket_name}/{filename}"
+        url = f"http://13.211.149.232:4444/storage/{bucket_name}/{filename}"
 
         return jsonify({'url': url}), 200
     except Exception as e:
