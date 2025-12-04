@@ -141,8 +141,14 @@ def upload_file(current_user_id):
         s3.upload_fileobj(file, bucket_name, filename, ExtraArgs={'ContentType': file.content_type})
 
         # Trả về URL để hiển thị ảnh
-        # Lưu ý: URL này phải đi qua Proxy (port 8080)
-        url = f"http://localhost:4444/storage/{bucket_name}/{filename}"
+        # Nếu request đi qua Nginx (có header X-Forwarded-Host), dùng cái đó chuẩn hơn
+        if request.headers.get('X-Forwarded-Host'):
+            scheme = request.headers.get('X-Forwarded-Proto', 'http')
+            host = request.headers.get('X-Forwarded-Host')
+            host_url = f"{scheme}://{host}"
+
+        # Tạo URL động
+        url = f"{host_url}/storage/{bucket_name}/{filename}"
 
         return jsonify({'url': url}), 200
     except Exception as e:
